@@ -8,7 +8,7 @@
         body { background: var(--dark); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; margin: 0; overflow-x: hidden; }
         
         /* Sidebar */
-        .sidebar { width: 260px; background: #000; height: 100vh; border-right: 1px solid var(--neon); padding: 20px; position: fixed; box-shadow: 5px 0 15px rgba(57, 255, 20, 0.1); }
+        .sidebar { width: 260px; background: #000; height: 100vh; border-right: 1px solid var(--neon); padding: 20px; position: fixed; box-shadow: 5px 0 15px rgba(57, 255, 20, 0.1); z-index: 100; }
         .sidebar h2 { color: var(--neon); text-shadow: 0 0 10px var(--neon); letter-spacing: 2px; }
         .nav-link { padding: 15px; display: block; color: #888; text-decoration: none; border-bottom: 1px solid #222; cursor: pointer; transition: 0.3s; }
         .nav-link:hover, .active { color: var(--neon); background: rgba(57, 255, 20, 0.05); border-left: 4px solid var(--neon); padding-left: 25px; }
@@ -31,13 +31,14 @@
         th, td { padding: 15px; border: 1px solid #222; text-align: left; }
         th { background: #111; color: var(--neon); }
         .btn-del { background: #ff4444; color: #fff; padding: 5px 10px; width: auto; font-size: 12px; }
+        iframe { border-radius: 10px; border: 1px solid var(--neon); }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <h2>GRIMSHADOW</h2>
-        <p style="font-size: 11px; color: #555; margin-bottom: 30px;">ADMIN CORE V3.0</p>
+        <p style="font-size: 11px; color: #555; margin-bottom: 30px;">ADMIN CORE V3.1</p>
         <div class="nav-link active" onclick="showSection('dash')">DASHBOARD</div>
         <div class="nav-link" onclick="showSection('keys')">KEY & EMAIL HUB</div>
         <div class="nav-link" onclick="showSection('products')">CATEGORY MANAGER</div>
@@ -106,10 +107,8 @@
         </div>
 
         <div id="chat" class="section">
-            <h1>LIVE CHAT TERMINAL</h1>
-            <div id="chatDisplay" style="height:400px; background:#000; border:1px solid #222; margin-bottom:10px; padding:15px; overflow-y:auto;"></div>
-            <input type="text" id="chatInput" placeholder="TYPE ENCRYPTED MESSAGE...">
-            <button onclick="sendChat()">SEND TO USER</button>
+            <h1>LIVE TERMINAL (SECURE CONNECTION)</h1>
+            <iframe src="https://tawk.to/chat/69e65e2430afce258dcb3f61/1jmltvfr6" width="100%" height="650px" frameborder="0"></iframe>
         </div>
 
     </div>
@@ -125,7 +124,6 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // AUTH LOGIC
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 const q = query(collection(db, "admins"), where("email", "==", user.email));
@@ -133,15 +131,10 @@
                 if (snap.empty && user.email !== "profastore2@gmail.com") {
                     alert("UNAUTHORIZED ACCESS!");
                     signOut(auth);
-                } else {
-                    initData();
-                }
-            } else {
-                signInWithPopup(auth, provider);
-            }
+                } else { initData(); }
+            } else { signInWithPopup(auth, provider); }
         });
 
-        // SECTION SWITCHER
         window.showSection = (id) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
             document.getElementById(id).classList.add('visible');
@@ -149,51 +142,51 @@
             event.target.classList.add('active');
         };
 
-        // PRODUCT MANAGEMENT
         window.saveProduct = async () => {
-            const data = { cat: pCat.value, name: pName.value, desc: pDesc.value, drive: pDrive.value };
-            await addDoc(collection(db, "products"), data);
+            await addDoc(collection(db, "products"), { cat: pCat.value, name: pName.value, desc: pDesc.value, drive: pDrive.value });
             alert("SITE UPDATED!");
         };
 
-        // EMAIL HANDLING
         const form = document.getElementById('emailForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const key = document.getElementById('kIn').value;
             const email = document.getElementById('eIn').value;
-            
-            // Firebase එකට සේව් කරනවා
             await addDoc(collection(db, "keys"), { key_code: key, user: email, status: "active" });
-            
-            // Email යවනවා
             const formData = new FormData(form);
-            const response = await fetch("https://api.web3forms.com/submit", { method: "POST", body: formData });
-            if (response.ok) alert("KEY SENT TO " + email);
+            await fetch("https://api.web3forms.com/submit", { method: "POST", body: formData });
+            alert("KEY SENT TO " + email);
         });
 
-        // LOAD DATA
         function initData() {
             onSnapshot(collection(db, "keys"), (s) => {
-                keyBody.innerHTML = "";
-                stKeys.innerText = s.size;
+                keyBody.innerHTML = ""; stKeys.innerText = s.size;
                 s.forEach(d => {
                     keyBody.innerHTML += `<tr><td>${d.data().key_code}</td><td>${d.data().user}</td><td>${d.data().status}</td><td><button class="btn-del" onclick="revokeKey('${d.id}')">DISABLE</button></td></tr>`;
                 });
             });
-
             onSnapshot(collection(db, "products"), (s) => {
-                prodBody.innerHTML = "";
-                stItems.innerText = s.size;
+                prodBody.innerHTML = ""; stItems.innerText = s.size;
                 s.forEach(d => {
                     prodBody.innerHTML += `<tr><td>${d.data().cat}</td><td>${d.data().name}</td><td><button class="btn-del" onclick="delDoc('products','${d.id}')">REMOVE</button></td></tr>`;
                 });
             });
         }
-
         window.delDoc = async (c, id) => { if(confirm("Delete?")) await deleteDoc(doc(db, c, id)); };
         window.revokeKey = async (id) => { await updateDoc(doc(db, "keys", id), { status: "disabled" }); };
         window.logout = () => signOut(auth).then(() => location.reload());
+    </script>
+
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/69e65e2430afce258dcb3f61/1jmltvfr6';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
     </script>
 </body>
 </html>
