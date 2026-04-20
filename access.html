@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>GRIMSHADOW | ACCESS</title><style>body{background:#000;color:#39ff14;font-family:monospace;text-align:center;padding-top:100px;}.box{border:1px solid #39ff14;padding:40px;display:inline-block;}input{padding:15px;background:#000;border:1px solid #39ff14;color:#39ff14;width:300px;margin-bottom:20px;}button{padding:15px 30px;background:#39ff14;color:#000;border:none;cursor:pointer;font-weight:bold;}</style></head>
+<body>
+    <div class="box"><h2>DECRYPT ACCESS KEY</h2><input type="text" id="ukey" placeholder="ENTER CODE"><br><button onclick="check()">VALIDATE</button><p id="m"></p></div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        const firebaseConfig = { apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY", authDomain: "grimshadow-hq.firebaseapp.com", projectId: "grimshadow-hq", storageBucket: "grimshadow-hq.firebasestorage.app", messagingSenderId: "849130104157", appId: "1:849130104157:web:360c94b263a052ff15f4b4" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app);
+        window.check = async () => { const v = document.getElementById('ukey').value; const q = query(collection(db, "keys"), where("key_code", "==", v), where("status", "==", "active")); const s = await getDocs(q);
+            if (!s.empty) { document.getElementById('m').innerText = "ACCESS GRANTED!"; setTimeout(() => { window.location.href = "YOUR_DOWNLOAD_LINK"; }, 2000); }
+            else { document.getElementById('m').innerText = "INVALID KEY!"; } };
+    </script>
+</body>
+</html>
