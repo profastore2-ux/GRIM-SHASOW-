@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <title>GRIMSHADOW | ADMIN CORE</title>
+    <style>
+        body { background: #000; color: #39ff14; font-family: 'Courier New', monospace; text-align: center; padding: 50px; }
+        .dashboard { border: 1px solid #39ff14; padding: 30px; display: none; margin: 20px auto; max-width: 600px; border-radius: 15px; box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); }
+        input { padding: 12px; background: #111; border: 1px solid #39ff14; color: #39ff14; width: 70%; margin-bottom: 15px; border-radius: 5px; }
+        button { padding: 12px 25px; background: #39ff14; color: #000; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 5px; transition: 0.3s; }
+        button:hover { background: #2ecc12; box-shadow: 0 0 10px #39ff14; }
+        table { width: 100%; margin-top: 25px; border-collapse: collapse; }
+        th, td { border: 1px solid #222; padding: 12px; text-align: center; }
+        th { color: #39ff14; border-bottom: 2px solid #39ff14; }
+        .btn-rev { background: #ff4444; color: white; padding: 5px 10px; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginArea" style="margin-top: 100px;">
+        <h2 style="letter-spacing: 3px;">SYSTEM ACCESS REQUIRED</h2>
+        <p>Login with <b>profastore2@gmail.com</b> to continue.</p>
+        <button onclick="login()">AUTHENTICATE AS ADMIN</button>
+    </div>
+
+    <div id="adminContent" class="dashboard">
+        <h1 style="text-shadow: 0 0 10px #39ff14;">GRIMSHADOW CORE CONTROL</h1>
+        <hr style="border: 0.5px solid #222; margin: 20px 0;">
+        
+        <div>
+            <input type="text" id="keyInput" placeholder="ENTER NEW ACCESS KEY">
+            <br>
+            <button onclick="addKey()">GENERATE KEY</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ACTIVE KEYS</th>
+                    <th>MANAGEMENT</th>
+                </tr>
+            </thead>
+            <tbody id="keyList"></tbody>
+        </table>
+        
+        <br><br>
+        <button style="background: #333; color: #888;" onclick="logout()">TERMINATE SESSION</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
+            authDomain: "grimshadow-hq.firebaseapp.com",
+            projectId: "grimshadow-hq",
+            storageBucket: "grimshadow-hq.firebasestorage.app",
+            messagingSenderId: "849130104157",
+            appId: "1:849130104157:web:360c94b263a052ff15f4b4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const ADMIN_EMAIL = "profastore2@gmail.com";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('adminContent').style.display = 'block';
+                document.getElementById('loginArea').style.display = 'none';
+                loadKeys();
+            } else {
+                if(user) {
+                    alert("ACCESS DENIED: " + user.email + " is not authorized!");
+                    signOut(auth);
+                }
+                document.getElementById('adminContent').style.display = 'none';
+                document.getElementById('loginArea').style.display = 'block';
+            }
+        });
+
+        window.login = () => signInWithPopup(auth, provider);
+        window.logout = () => signOut(auth);
+
+        window.addKey = async () => {
+            const val = document.getElementById('keyInput').value;
+            if(val) {
+                await addDoc(collection(db, "keys"), { key_code: val, status: "active" });
+                document.getElementById('keyInput').value = "";
+            }
+        };
+
+        function loadKeys() {
+            onSnapshot(collection(db, "keys"), (snap) => {
+                const list = document.getElementById('keyList');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    list.innerHTML += `<tr>
+                        <td>${d.data().key_code}</td>
+                        <td><button class="btn-rev" onclick="deleteKey('${d.id}')">REVOKE</button></td>
+                    </tr>`;
+                });
+            });
+        }
+
+        window.deleteKey = async (id) => {
+            if(confirm("Confirm Revocation?")) await deleteDoc(doc(db, "keys", id));
+        };
+    </script>
+</body>
+</html>
