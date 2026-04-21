@@ -16,109 +16,62 @@
             margin: 0; padding: 0; background-color: var(--dark);
             color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden;
             background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('image_16.png'); 
-            background-size: cover; 
-            background-position: center; 
-            background-attachment: fixed;
+            background-size: cover; background-position: center; background-attachment: fixed;
         }
 
-        /* 1. NAVBAR */
+        /* NAVBAR */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 80px; background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            position: fixed; top: 0; width: 100%; z-index: 1000;
+            backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000;
             border-bottom: 1px solid rgba(255, 159, 0, 0.2); box-sizing: border-box;
         }
         .nav-logo img { height: 45px; }
-
         .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; }
         .nav-links a { text-decoration: none; color: #fff; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
         .nav-links a:hover { color: var(--orange); }
 
-        /* 2. HERO SECTION */
-        .hero {
-            height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(0, 0, 0, 0.2);
-            text-align: center; padding: 0 20px;
-        }
-        .hero h1 { 
-            font-size: 5rem;
-            letter-spacing: 10px; 
-            margin: 0; 
-            text-transform: uppercase;
-            font-weight: 900;
-        }
+        /* HERO */
+        .hero { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+        .hero h1 { font-size: 5rem; letter-spacing: 10px; margin: 0; text-transform: uppercase; font-weight: 900; }
         .hero h1 span { color: var(--orange); text-shadow: 0 0 20px var(--orange); }
 
-        /* 3. SYSTEM GUIDE (Replaces Stats Bar) */
+        /* GUIDE */
         .guide-bar {
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(10px);
-            display: flex; justify-content: center;
-            gap: 40px; padding: 60px 40px; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(10px);
+            display: flex; justify-content: center; gap: 40px; padding: 60px 40px; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
         }
         .guide-item { text-align: center; max-width: 250px; }
         .guide-item .step { font-size: 0.7rem; color: var(--orange); font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; display: block; }
-        .guide-item h3 { color: #fff; margin: 10px 0; font-size: 1rem; letter-spacing: 1px; text-transform: uppercase; }
-        .guide-item p { color: var(--text-sub); font-size: 0.8rem; line-height: 1.5; margin: 0; }
+        .guide-item h3 { color: #fff; margin: 10px 0; font-size: 1rem; text-transform: uppercase; }
 
-        /* 4. GRID SECTION */
+        /* SERVICES GRID */
         .services { padding: 100px 40px; max-width: 1300px; margin: 0 auto; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-
         .card {
-            background: var(--card-bg); border: 1px solid #222;
-            padding: 40px; border-radius: 8px; transition: 0.4s; cursor: pointer;
-            position: relative; overflow: hidden; backdrop-filter: blur(10px);
+            background: var(--card-bg); border: 1px solid #222; padding: 40px; border-radius: 8px; transition: 0.4s; cursor: pointer;
+            backdrop-filter: blur(10px); position: relative; overflow: hidden;
         }
-        .card:hover { 
-            border-color: var(--orange); 
-            transform: translateY(-10px);
-            background: rgba(14, 14, 14, 0.85);
-            box-shadow: 0 0 30px rgba(255, 159, 0, 0.2);
-        }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 3px;
-            background: var(--orange); transition: 0.4s;
-        }
-        .card:hover::before { width: 100%; }
+        .card:hover { border-color: var(--orange); transform: translateY(-10px); background: rgba(14, 14, 14, 0.85); box-shadow: 0 0 30px rgba(255, 159, 0, 0.2); }
         .card h3 { color: var(--orange); margin: 0 0 15px 0; font-size: 1.2rem; }
         .card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
 
-        /* 5. PRICING & CUSTOM WORK */
-        .pricing-info {
-            padding: 60px 40px; text-align: center; background: rgba(255, 159, 0, 0.03);
-            border: 1px dashed rgba(255, 159, 0, 0.2); max-width: 1000px; margin: 0 auto 100px auto; border-radius: 10px;
-        }
-        .pricing-info h2 { color: var(--orange); letter-spacing: 2px; }
-        .pricing-info p { color: var(--text-sub); line-height: 1.8; }
+        /* MODAL (FOR CONTACT FORM) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #111; padding: 40px; border-radius: 10px; border: 1px solid var(--orange); width: 90%; max-width: 500px; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box; }
+        .orange-btn { background: var(--orange); color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; text-transform: uppercase; }
 
-        /* 6. CLIENT STORIES */
-        .testimonials { padding: 100px 20px; background: rgba(8, 8, 8, 0.7); backdrop-filter: blur(10px); text-align: center; }
-        .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1200px; margin: 50px auto 0; }
-        .test-card { background: #111; padding: 30px; border-radius: 8px; border-left: 4px solid var(--orange); text-align: left; transition: 0.3s; }
-        .test-card:hover { transform: scale(1.02); }
-        .test-card p { font-style: italic; color: #ddd; font-size: 0.95rem; }
-        .test-card span { color: var(--orange); display: block; margin-top: 15px; font-weight: bold; }
-
-        /* 📱 MOBILE RESPONSIVE */
         @media (max-width: 900px) {
             .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
-            .nav-links { gap: 15px; justify-content: center; }
-            .hero { height: auto; padding: 180px 20px 100px; }
-            .hero h1 { font-size: 2.5rem; letter-spacing: 5px; }
-            .guide-bar { flex-direction: column; gap: 40px; align-items: center; }
-            .grid, .test-grid { grid-template-columns: 1fr; }
-            .services { padding: 60px 20px; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="nav-logo">
-            <img src="image_13.png" alt="GrimShadow Logo">
-        </div>
+        <div class="nav-logo"><img src="image_13.png" alt="GrimShadow"></div>
         <ul class="nav-links">
             <li><a href="#home">Home</a></li>
             <li><a href="#services">Services</a></li>
@@ -130,66 +83,96 @@
     <header class="hero" id="home">
         <img src="image_13.png" style="height: 180px; margin-bottom: 30px; filter: drop-shadow(0 0 15px var(--orange));">
         <h1>WELCOME TO <span>GRIMSHADOW</span></h1>
-        <p style="color:#fff; font-size: 1.1rem; max-width: 700px; font-weight: bold; text-shadow: 2px 2px 4px #000;">
-            The industry-leading repository for secure kernel optimization and advanced system tools.
-        </p>
+        <p style="color:#fff; font-size: 1.1rem; max-width: 700px; font-weight: bold; text-shadow: 2px 2px 4px #000;">The industry-leading repository for secure kernel optimization and advanced system tools.</p>
     </header>
 
     <div class="guide-bar">
-        <div class="guide-item">
-            <span class="step">STEP 01</span>
-            <h3>REGISTRATION</h3>
-            <p>Click on 'Access Portal' and register with your email address to create your secure user profile.</p>
-        </div>
-        <div class="guide-item">
-            <span class="step">STEP 02</span>
-            <h3>REQUEST ACCESS</h3>
-            <p>Browse our services and submit an access request through your personal dashboard.</p>
-        </div>
-        <div class="guide-item">
-            <span class="step">STEP 03</span>
-            <h3>GET THE KEY</h3>
-            <p>Once approved, your unique Access Key will be delivered to your dashboard and via email.</p>
-        </div>
-        <div class="guide-item">
-            <span class="step">STEP 04</span>
-            <h3>FREE DOWNLOAD</h3>
-            <p>Use your key to unlock the encrypted files and start using the tools immediately for free.</p>
-        </div>
+        <div class="guide-item"><span class="step">STEP 01</span><h3>REGISTRATION</h3><p>Register with your email to create your profile.</p></div>
+        <div class="guide-item"><span class="step">STEP 02</span><h3>REQUEST ACCESS</h3><p>Browse and submit an access request via dashboard.</p></div>
+        <div class="guide-item"><span class="step">STEP 03</span><h3>GET THE KEY</h3><p>Unique key delivered via dashboard and email.</p></div>
+        <div class="guide-item"><span class="step">STEP 04</span><h3>FREE DOWNLOAD</h3><p>Unlock files and start using tools immediately.</p></div>
     </div>
 
     <section class="services" id="services">
-        <div class="grid">
-            <div class="card" onclick="location.href='access.html'"><h3>SYSTEM PURGE</h3><p>Next-generation kernel optimization, memory cleaning, and digital footprint elimination for elite privacy.</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>MEMORY HUB</h3><p>Live memory offset monitoring and advanced debugging tools designed for modern developers.</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>SCRIPTS & MODS</h3><p>Premium repositories for custom Lua and C++ tools. Secure and undetected. [ KEY REQUIRED ]</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>TECH CONSULTING</h3><p>Expert consulting on cyber security architecture and custom penetration testing requests.</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>FORUM ACCESS</h3><p>Private discussion forums for verified members to share deep-web knowledge and research.</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>DIRECT CONTACT</h3><p>Send secure, end-to-end encrypted messages directly to our core team. Response < 12h.</p></div>
+        <div class="grid" id="services-grid">
+            <p>Loading Dynamic Repository...</p>
         </div>
     </section>
 
-    <div class="pricing-info">
-        <h2>CORE POLICY & PRICING</h2>
-        <p>
-            All standard tools, scripts, and software in our repository are **100% FREE** for our registered members. 
-            We do not charge for access to public downloads. Fees are only applicable for **Custom Software Development**, 
-            Personalized Cyber Security Consulting, or Private Infrastructure Setup. Contact us for professional requests.
-        </p>
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <h2 style="color:var(--orange)">DIRECT INQUIRY</h2>
+            <input type="text" id="contactName" placeholder="Your Name">
+            <input type="email" id="contactEmail" placeholder="Your Email">
+            <textarea id="contactMessage" rows="5" placeholder="How can we help?"></textarea>
+            <button class="orange-btn" onclick="submitInquiry()">SEND MESSAGE</button>
+            <p style="text-align: center; cursor: pointer; margin-top: 15px;" onclick="closeModal()">Close</p>
+        </div>
     </div>
-
-    <section class="testimonials" id="stories">
-        <h2 style="letter-spacing: 5px; font-size: 2rem; text-transform: uppercase;">Client <span>Stories</span></h2>
-        <div class="test-grid">
-            <div class="test-card"><p>"The best service in the market. Fast and secure. My assets have never been safer."</p><span>- Shadow Gaming</span></div>
-            <div class="test-card"><p>"Excellent support and high-quality tools. The kernel optimization is a game changer."</p><span>- Achira Liyanage</span></div>
-            <div class="test-card"><p>"Highly recommended for anyone looking for premium, reliable tools. Worth every cent."</p><span>- Nimesh SL</span></div>
-        </div>
-    </section>
 
     <footer style="text-align: center; padding: 40px; color: #444; border-top: 1px solid #1a1a1a; font-size: 0.8rem;">
         &copy; 2026 GRIMSHADOW ENTERPRISE | SECURING THE VOID.
     </footer>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
+            authDomain: "grimshadow-hq.firebaseapp.com",
+            projectId: "grimshadow-hq",
+            storageBucket: "grimshadow-hq.firebasestorage.app",
+            messagingSenderId: "849130104157",
+            appId: "1:849130104157:web:360c94b263a052ff15f4b4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 1. LOAD SERVICES DYNAMICALLY
+        onSnapshot(collection(db, "services"), (snapshot) => {
+            const grid = document.getElementById('services-grid');
+            grid.innerHTML = "";
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                grid.innerHTML += `
+                    <div class="card" onclick="location.href='access.html'">
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                    </div>
+                `;
+            });
+            // Manual Add: Direct Contact Card
+            grid.innerHTML += `
+                <div class="card" onclick="openModal()">
+                    <h3>DIRECT CONTACT</h3>
+                    <p>Send secure, encrypted messages directly to our core team. Response < 12h.</p>
+                </div>
+            `;
+        });
+
+        // 2. MODAL LOGIC
+        window.openModal = () => document.getElementById('contactModal').style.display = 'flex';
+        window.closeModal = () => document.getElementById('contactModal').style.display = 'none';
+
+        // 3. SUBMIT INQUIRY TO FIREBASE
+        window.submitInquiry = async () => {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+
+            if(!name || !email || !message) return alert("Please fill all fields");
+
+            await addDoc(collection(db, "inquiries"), {
+                name, email, message,
+                status: "new",
+                timestamp: serverTimestamp()
+            });
+
+            alert("Inquiry Sent! Admin will reply to your email soon.");
+            closeModal();
+        };
+    </script>
 </body>
 </html>
