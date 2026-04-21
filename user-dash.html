@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIMSHADOW | USER TERMINAL</title>
+    <style>
+        :root { --orange: #FF9F00; --dark: #050505; --card: #111; }
+        body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; }
+        .sidebar { width: 250px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; }
+        .sidebar h2 { color: var(--orange); font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 40px; }
+        .nav-item { padding: 15px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255, 159, 0, 0.1); color: var(--orange); }
+        .main { margin-left: 250px; width: calc(100% - 250px); padding: 40px; box-sizing: border-box; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card { background: var(--card); border: 1px solid #222; padding: 25px; border-radius: 10px; margin-bottom: 20px; }
+        .orange-btn { background: var(--orange); color: #000; border: none; padding: 12px 25px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 10px; }
+        select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; }
+        .key-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; }
+        #chat-box { height: 250px; overflow-y: auto; background: #000; padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #222; }
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 5px; max-width: 80%; font-size: 0.9rem; }
+        .msg.admin { background: #222; align-self: flex-start; }
+        .msg.user { background: rgba(255, 159, 0, 0.2); margin-left: auto; text-align: right; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>GRIMSHADOW</h2>
+        <div class="nav-item active" onclick="showSection('dash')">DASHBOARD</div>
+        <div class="nav-item" onclick="showSection('keys')">MY KEYS</div>
+        <div class="nav-item" onclick="showSection('messages')">MESSAGES</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: 100px; color: #ff4444;">LOGOUT</div>
+    </div>
+
+    <div class="main">
+        <div id="dash" class="section active">
+            <h1>WELCOME, <span id="user-display-name" style="color:var(--orange)">User</span></h1>
+            <div class="card">
+                <h3>REQUEST NEW ACCESS</h3>
+                <select id="service-select">
+                    <option value="SYSTEM PURGE">SYSTEM PURGE</option>
+                    <option value="SCRIPTS & MODS">SCRIPTS & MODS</option>
+                    <option value="MEMORY HUB">MEMORY HUB</option>
+                </select>
+                <button class="orange-btn" onclick="requestKey()">SUBMIT REQUEST</button>
+            </div>
+        </div>
+
+        <div id="keys" class="section">
+            <h1>MY ACCESS KEYS</h1>
+            <div class="card" id="keys-list"><p style="color:#444">No keys yet.</p></div>
+        </div>
+
+        <div id="messages" class="section">
+            <h1>SECURE MESSAGES</h1>
+            <div class="card">
+                <div id="chat-box"></div>
+                <textarea id="msg-input" placeholder="Message Admin..."></textarea>
+                <button class="orange-btn" onclick="sendMessage()">SEND</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
+            authDomain: "grimshadow-hq.firebaseapp.com",
+            projectId: "grimshadow-hq",
+            storageBucket: "grimshadow-hq.firebasestorage.app",
+            messagingSenderId: "849130104157",
+            appId: "1:849130104157:web:360c94b263a052ff15f4b4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        let userUID = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userUID = user.uid;
+                document.getElementById('user-display-name').innerText = user.email.split('@')[0];
+                listenToKeys();
+                listenToMessages();
+            } else {
+                window.location.href = 'access.html';
+            }
+        });
+
+        window.showSection = (id) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        };
+
+        window.requestKey = async () => {
+            await addDoc(collection(db, "requests"), {
+                uid: userUID,
+                email: auth.currentUser.email,
+                service: document.getElementById('service-select').value,
+                status: "pending",
+                key: "",
+                timestamp: serverTimestamp()
+            });
+            alert("Sent!");
+        };
+
+        function listenToKeys() {
+            const q = query(collection(db, "requests"), where("uid", "==", userUID));
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('keys-list');
+                list.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    list.innerHTML += `<div class="key-item"><strong>${data.service}</strong> <span>${data.key || 'PENDING'}</span></div>`;
+                });
+            });
+        }
+
+        window.sendMessage = async () => {
+            const text = document.getElementById('msg-input').value;
+            if(!text) return;
+            await addDoc(collection(db, "chats"), { uid: userUID, text: text, sender: "user", timestamp: serverTimestamp() });
+            document.getElementById('msg-input').value = "";
+        };
+
+        function listenToMessages() {
+            const q = query(collection(db, "chats"), where("uid", "==", userUID), orderBy("timestamp", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const box = document.getElementById('chat-box');
+                box.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    box.innerHTML += `<div class="msg ${d.sender}">${d.text}</div>`;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        window.logout = () => signOut(auth).then(() => location.href = 'index.html');
+    </script>
+</body>
+</html>
