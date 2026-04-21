@@ -3,214 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIMSHADOW | Cyber Security & Ethical Hacking</title>
+    <title>GRIMSHADOW CORE</title>
     <style>
-        :root {
-            --orange: #FF9F00; /* Neon Orange from Logo */
-            --dark: #050505;
-            --card-bg: #111111;
-            --text-main: #FFFFFF;
-            --text-sub: #AAAAAA;
-            --glow: 0 0 15px rgba(255, 159, 0, 0.5);
-        }
-
-        body {
-            margin: 0; padding: 0;
-            background-color: var(--dark);
-            color: var(--text-main);
-            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* ----------------------------------
-           1. NAVIGATION BAR (GTA Style)
-        ---------------------------------- */
-        .navbar {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 80px; background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px); position: fixed;
-            top: 0; width: 100%; box-sizing: border-box; z-index: 1000;
-            border-bottom: 1px solid #222;
-        }
-
-        .nav-logo img { height: 50px; } /* ඔයාගේ ලෝගෝ එක මෙතැනට */
-
-        .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; }
-        .nav-links a {
-            text-decoration: none; color: var(--text-sub);
-            text-transform: uppercase; font-size: 0.85rem; font-weight: 600;
-            letter-spacing: 1px; transition: 0.3s;
-        }
-        .nav-links a:hover { color: var(--orange); text-shadow: var(--glow); }
-
-        .nav-btn {
-            background-color: var(--orange); color: #000;
-            border: none; padding: 10px 25px; font-weight: bold;
-            text-transform: uppercase; border-radius: 5px; cursor: pointer;
-            transition: 0.3s; font-size: 0.8rem; letter-spacing: 1px;
-        }
-        .nav-btn:hover { box-shadow: 0 0 20px rgba(255, 159, 0, 0.7); transform: scale(1.05); }
-
-        /* ----------------------------------
-           2. HERO SECTION (With Hacker Bg)
-        ---------------------------------- */
-        .hero {
-            height: 80vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            /* 💾 බැක්ග්‍රවුන්ඩ් පොටෝ එක මෙතැනට */
-            background-image: linear-gradient(rgba(0,0,0,0.8), var(--dark)), url('image_0.png');
-            background-size: cover; background-position: center;
-            padding: 0 20px; margin-top: 80px; /* Navbar padding */
-        }
-
-        .hero img.large-logo { height: 180px; margin-bottom: 20px; filter: drop-shadow(var(--glow)); }
+        :root { --neon: #FF9F00; --dark: #000; --card-bg: rgba(10, 10, 10, 0.75); } /* --card-bg එක තවත් Transparent කළා */
         
-        .hero h1 { font-size: 3.5rem; margin: 0; text-transform: uppercase; letter-spacing: 3px; }
-        .hero h1 span { color: var(--orange); text-shadow: var(--glow); }
+        body { 
+            margin: 0; padding: 0; background: var(--dark); color: #fff; 
+            font-family: 'Courier New', monospace; overflow-x: hidden; 
+            /* 💾 බැක්ග්‍රවුන්ඩ් එක මෙතැනට දැම්මා */
+            background-image: url('image_16.png'); /* 💡 පස්සේ ඔයාගේම ලින්ක් එකක් දාන්න */
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+
+        .main-wrapper { 
+            display: flex; flex-direction: column; align-items: center; 
+            min-height: 100vh; padding: 40px 20px; box-sizing: border-box; 
+            background: rgba(0, 0, 0, 0.4); /* 💡 පින්තූරය උඩින් තියෙන Overlay එක 0.7 ඉඳන් 0.4 දක්වා අඩු කළා */
+        }
+
+        h1.brand { 
+            color: var(--neon) !important; 
+            text-shadow: 0 0 20px var(--neon) !important; 
+            text-align: center; 
+            letter-spacing: 10px !important; 
+            margin-bottom: 20px; 
+            font-size: 4rem !important; 
+            text-transform: uppercase;
+        }
+
+        .portal-btn {
+            background: transparent; border: 2px solid var(--neon); color: var(--neon);
+            padding: 15px 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 3px; border-radius: 5px;
+            transition: 0.3s; margin-bottom: 50px; text-decoration: none; display: inline-block;
+        }
+        .portal-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 20px var(--neon); }
+
+        .container { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; 
+            max-width: 1200px; width: 100%; z-index: 1; 
+        }
+
+        .card { 
+            background: var(--card-bg); /* විනිවිද පෙනෙන කාඩ් පසුබිම */
+            border: 1px solid #333; /* Border එක ටිකක් පැහැදිලි කළා */
+            padding: 30px; 
+            border-radius: 5px; transition: 0.3s; cursor: pointer; backdrop-filter: blur(8px); /* Blur එකක් එකතු කළා */
+        }
+        .card:hover { border-color: var(--neon); box-shadow: 0 0 20px rgba(255, 159, 0, 0.3); transform: translateY(-5px); }
         
-        .hero p { color: var(--text-sub); max-width: 600px; margin: 20px 0 40px 0; line-height: 1.6; }
+        .card h3 { color: var(--neon); margin-top: 0; font-size: 1.2rem; }
+        .card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
 
-        /* ----------------------------------
-           3. SERVICES / CATEGORIES (GTA Cards)
-        ---------------------------------- */
-        .services { padding: 80px; max-width: 1400px; margin: 0 auto; }
-        .section-title { text-align: center; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 60px; }
-        .section-title span { border-bottom: 3px solid var(--orange); padding-bottom: 10px; }
-
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-
-        .card {
-            background-color: var(--card-bg); border-radius: 10px; padding: 40px;
-            border: 1px solid #1a1a1a; transition: 0.4s; cursor: pointer;
-            position: relative; display: flex; flex-direction: column;
-        }
-        .card:hover { border-color: var(--orange); box-shadow: 0 0 30px rgba(255, 159, 0, 0.2); transform: translateY(-8px); }
-        
-        /* Orange Line on top like GTA cards */
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 3px;
-            background-color: var(--orange); transition: 0.4s; border-radius: 10px 10px 0 0;
-        }
-        .card:hover::before { width: 100%; }
-
-        .card h3 { color: var(--orange); text-transform: uppercase; letter-spacing: 2px; margin: 0 0 20px 0; font-size: 1.1rem; }
-        .card p { color: var(--text-sub); font-size: 0.9rem; line-height: 1.6; margin: 0 0 30px 0; flex-grow: 1; }
-
-        .card-btn {
-            background: transparent; border: 1px solid #333; color: var(--text-sub);
-            padding: 12px; font-weight: bold; text-transform: uppercase;
-            border-radius: 5px; cursor: pointer; transition: 0.3s; width: 100%;
-            font-size: 0.75rem; letter-spacing: 1px;
-        }
-        .card:hover .card-btn { background-color: var(--orange); color: #000; border-color: var(--orange); }
-
-        /* ----------------------------------
-           4. TESTIMONIALS (Optional Add-on)
-        ---------------------------------- */
-        .testimonials { background-color: #080808; padding: 80px; text-align: center; border-top: 1px solid #1a1a1a; }
-        .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
-        .test-card { background: #111; padding: 30px; border-radius: 10px; border: 1px solid #222; text-align: left; }
-        .test-card p { font-style: italic; color: var(--text-sub); font-size: 0.9rem; }
-        .test-card .user { color: var(--orange); font-weight: bold; margin-top: 15px; display: block; }
-
-        /* ----------------------------------
-           5. MOBILE RESPONSIVE
-        ---------------------------------- */
-        @media (max-width: 1100px) {
-            .navbar { padding: 20px 40px; }
-            .services { padding: 40px; }
-            .grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 768px) {
-            .nav-links { display: none; } /* Hide links on mobile */
-            .hero h1 { font-size: 2.2rem; }
-            .grid, .test-grid { grid-template-columns: 1fr; }
-            .services, .navbar { padding: 20px; }
+        @media (max-width: 900px) { .container { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+        @media (max-width: 600px) {
+            h1.brand { font-size: 2rem !important; letter-spacing: 4px !important; } 
+            .portal-btn { padding: 10px 20px; font-size: 0.9rem; }
+            .container { grid-template-columns: 1fr; gap: 15px; } 
+            .card { padding: 20px; }
         }
     </style>
 </head>
 <body>
-
-    <nav class="navbar">
-        <div class="nav-logo">
-            <img src="image_13.png" alt="GrimShadow Logo">
-        </div>
-        <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <button class="nav-btn" onclick="location.href='access.html'">Access Portal</button>
-    </nav>
-
-    <header class="hero" id="home">
-        <img src="image_13.png" alt="GrimShadow Logo" class="large-logo">
-        <h1>WELCOME TO <span>GRIMSHADOW</span></h1>
-        <p>Expert consulting on cyber security, network architecture, and ethical hacking requests. Secure your assets with next-generation tools.</p>
-        <button class="nav-btn" style="padding: 15px 40px; font-size: 1rem;" onclick="location.href='#services'">Explore Services</button>
-    </header>
-
-    <section class="services" id="services">
-        <h2 class="section-title"><span>OUR REPOSITORY</span></h2>
+    <div class="main-wrapper">
+        <h1 class="brand">GRIMSHADOW</h1>
         
-        <div class="grid">
-            <div class="card" onclick="location.href='access.html'">
-                <h3>SYSTEM PURGE</h3>
-                <p>Next-generation kernel optimization, memory cleaning, and digital footprint elimination tools. Enhanced privacy protocol.</p>
-                <button class="card-btn">Explore</button>
-            </div>
+        <a href="access.html" class="portal-btn">ACCESS PORTAL</a>
 
-            <div class="card" onclick="location.href='access.html'">
-                <h3>MEMORY HUB</h3>
-                <p>Live memory offset monitoring, secure data injection, and advanced debugging tools for system developers.</p>
-                <button class="card-btn">Explore</button>
-            </div>
-
-            <div class="card" onclick="location.href='access.html'">
-                <h3>SCRIPTS & MODS</h3>
-                <p>Premium repositories for custom Lua and C++ tools. Advanced system simulations and automated tasks.</p>
-                <button class="card-btn">[ KEY REQUIRED ]</button>
-            </div>
-
-            <div class="card" onclick="location.href='access.html'">
-                <h3>TECH CONSULTING</h3>
-                <p>Expert consulting on cyber security, network architecture, and custom tool development requests.</p>
-                <button class="card-btn">Explore</button>
-            </div>
-
-            <div class="card" onclick="location.href='access.html'">
-                <h3>FORUM ACCESS</h3>
-                <p>Private discussion forums for verified members. Share knowledge and collaborate on security research.</p>
-                <button class="card-btn">Explore</button>
-            </div>
-
-            <div class="card" onclick="location.href='access.html'">
-                <h3>DIRECT CONTACT</h3>
-                <p>Send secure, encrypted messages. For special requests or service inquiries. Response time < 12h.</p>
-                <button class="card-btn">[ ENCRYPTED CHAT ]</button>
-            </div>
+        <div class="container">
+            <div class="card" onclick="location.href='access.html'"><h3>SYSTEM PURGE</h3><p>Next-generation kernel optimization, memory cleaning, and digital footprint elimination...</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>MEMORY HUB</h3><p>Live memory offset monitoring, secure data injection, and advanced debugging tools...</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>SCRIPTS & MODS</h3><p>Premium repositories for custom Lua and C++ tools. [ KEY REQUIRED ]</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>TECH CONSULTING</h3><p>Expert consulting on cyber security, network architecture, and custom tool development...</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>FORUM ACCESS</h3><p>Private discussion forums for verified members. Share knowledge and collaborate...</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>DIRECT CONTACT</h3><p>Send secure, encrypted messages. For special requests or service inquiries...</p></div>
         </div>
-    </section>
-
-    <section class="testimonials">
-        <h2 class="section-title"><span>CLIENT STORIES</span></h2>
-        <div class="test-grid">
-            <div class="test-card">
-                <p>"The System Purge tool is unmatched. Absolute privacy."</p>
-                <span class="user">- Dark_Operative</span>
-            </div>
-            <div class="test-card">
-                <p>"Excellent consulting. They secured our network structure within hours."</p>
-                <span class="user">- Tech_Corp_CEO</span>
-            </div>
-            <div class="test-card">
-                <p>"Premium Lua scripts. Work perfectly. Highly recommended."</p>
-                <span class="user">- Script_Master_X</span>
-            </div>
-        </div>
-    </section>
-
+    </div>
 </body>
 </html>
