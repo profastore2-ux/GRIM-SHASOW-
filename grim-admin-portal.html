@@ -3,71 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIMADMIN | MEGA PANEL</title>
+    <title>GRIMADMIN | ELITE PANEL</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        :root { --orange: #FF9F00; --dark: #050505; --card: #111; }
+        :root { --orange: #FF9F00; --dark: #050505; --card: #111; --red: #ff4444; }
         body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; }
         
         /* Sidebar Navigation */
-        .sidebar { width: 260px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; }
-        .sidebar h2 { color: var(--orange); letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid var(--orange); padding-bottom: 10px; }
+        .sidebar { width: 260px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; z-index: 100; }
+        .sidebar h2 { color: var(--orange); letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid var(--orange); padding-bottom: 10px; font-size: 1.2rem; }
         .nav-item { padding: 12px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
         .nav-item:hover, .nav-item.active { background: rgba(255, 159, 0, 0.1); color: var(--orange); }
 
         /* Main Area */
         .main { margin-left: 260px; width: calc(100% - 260px); padding: 40px; box-sizing: border-box; }
-        .section { display: none; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .card { background: var(--card); border: 1px solid #222; padding: 25px; border-radius: 10px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
 
         /* Controls */
-        input, textarea, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; }
-        .btn { background: var(--orange); color: #000; border: none; padding: 12px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+        input, textarea, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; box-sizing: border-box; }
+        .btn { background: var(--orange); color: #000; border: none; padding: 10px 18px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s; font-size: 0.85rem; }
         .btn:hover { box-shadow: 0 0 15px var(--orange); transform: translateY(-2px); }
-        .btn.red { background: #ff4444; color: #fff; }
+        .btn.red { background: var(--red); color: #fff; }
+        .btn.blue { background: #0088cc; color: #fff; }
 
         /* Tables */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { text-align: left; padding: 12px; border-bottom: 1px solid #222; font-size: 0.85rem; }
-        th { color: var(--orange); text-transform: uppercase; }
-
-        .reply-area { margin-top: 10px; padding: 10px; background: #000; border-radius: 5px; border-left: 3px solid var(--orange); }
+        th { color: var(--orange); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-pending { background: #554400; color: #ffcc00; }
+        .status-active { background: #004411; color: #00ff66; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>GRIMADMIN</h2>
+        <h2>GRIMSHADOW</h2>
         <div class="nav-item active" onclick="showSection('overview')">OVERVIEW</div>
         <div class="nav-item" onclick="showSection('items')">ITEM MANAGEMENT</div>
         <div class="nav-item" onclick="showSection('requests')">ACCESS REQUESTS</div>
-        <div class="nav-item" onclick="showSection('inquiries')">INQUIRY INBOX</div>
         <div class="nav-item" onclick="showSection('admins')">ADMIN TEAM</div>
-        <div class="nav-item" onclick="logout()" style="margin-top: 50px; color: #ff4444;">SHUTDOWN</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: 50px; color: var(--red);">SHUTDOWN</div>
     </div>
 
     <div class="main">
         <div id="overview" class="section active">
             <h1>SYSTEM OVERVIEW</h1>
             <div class="grid">
-                <div class="card"><h3>ACTIVE REPOSITORY</h3><p id="count-items">Loading...</p></div>
-                <div class="card"><h3>PENDING REQS</h3><p id="count-reqs">Loading...</p></div>
-                <div class="card"><h3>TOTAL INQUIRIES</h3><p id="count-inq">Loading...</p></div>
+                <div class="card"><h3>ITEMS</h3><p id="count-items" style="font-size: 2rem; color: var(--orange);">0</p></div>
+                <div class="card"><h3>PENDING</h3><p id="count-reqs" style="font-size: 2rem; color: var(--red);">0</p></div>
+                <div class="card"><h3>SYSTEM STATUS</h3><p style="color: #00ff66;">SECURE / ONLINE</p></div>
             </div>
         </div>
 
         <div id="items" class="section">
             <h1>ITEM REPOSITORY</h1>
             <div class="card">
-                <h3>ADD NEW ITEM (Live on Homepage)</h3>
-                <input type="text" id="itemName" placeholder="Item Name (e.g. SYSTEM PURGE)">
-                <textarea id="itemDesc" placeholder="Brief Description..."></textarea>
-                <button class="btn" onclick="addItem()">PUBLISH TO HOMEPAGE</button>
+                <h3>PUBLISH NEW SERVICE</h3>
+                <input type="text" id="itemName" placeholder="Service Name">
+                <textarea id="itemDesc" placeholder="Service Description..."></textarea>
+                <button class="btn" onclick="addItem()">PUBLISH LIVE</button>
             </div>
             <div class="card">
-                <h3>EXISTING ITEMS</h3>
                 <table>
                     <thead><tr><th>Name</th><th>Action</th></tr></thead>
                     <tbody id="items-list"></tbody>
@@ -76,30 +79,29 @@
         </div>
 
         <div id="requests" class="section">
-            <h1>PENDING ACCESS REQUESTS</h1>
+            <h1>PENDING VERIFICATIONS</h1>
             <div class="card">
                 <table>
-                    <thead><tr><th>User Email</th><th>Requested Service</th><th>Action</th></tr></thead>
+                    <thead><tr><th>User Email</th><th>Status</th><th>Verification</th></tr></thead>
                     <tbody id="req-list"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="inquiries" class="section">
-            <h1>DIRECT INQUIRIES</h1>
-            <div id="inquiry-list"></div>
-        </div>
-
         <div id="admins" class="section">
-            <h1>ADMINISTRATORS</h1>
+            <h1>ADMIN COMMAND CENTER</h1>
             <div class="card">
-                <input type="email" id="newAdminEmail" placeholder="Enter New Admin Email">
-                <button class="btn" onclick="addAdmin()">GRANT ACCESS</button>
+                <h3>REGISTER NEW ADMIN</h3>
+                <div style="display: flex; gap: 10px;">
+                    <input type="email" id="adminMail" placeholder="Email Address">
+                    <input type="text" id="adminTele" placeholder="Telegram User ID">
+                    <button class="btn" onclick="registerAdmin()" style="height: 42px;">GRANT ACCESS</button>
+                </div>
             </div>
             <div class="card">
                 <table>
-                    <thead><tr><th>Admin Email</th><th>Status</th></tr></thead>
-                    <tbody id="admin-list"></tbody>
+                    <thead><tr><th>Admin</th><th>Telegram ID</th><th>Action</th></tr></thead>
+                    <tbody id="admin-list-body"></tbody>
                 </table>
             </div>
         </div>
@@ -123,29 +125,22 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Security: Master Admin & DB Admin Check
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                checkAdminAccess(user.email);
-            } else {
-                window.location.href = 'access.html';
-            }
-        });
+        // --- GRIMSHADOW AUTOMATION CONFIG ---
+        const GRIM_CONFIG = {
+            serviceID: "service_pvurqvo",
+            templateID: "template_3jthuy8",
+            publicKey: "le4jq10jrrE4sFDVH",
+            botToken: "8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ",
+            adminGroupID: "-1003946509160" // ✅ ඔයා සොයාගත් ID එක
+        };
 
-        async function checkAdminAccess(userEmail) {
-            const masterAdmin = "profastore2@gmail.com";
-            if (userEmail === masterAdmin) {
-                loadAllData(); return;
-            }
-            const q = query(collection(db, "admins"), where("email", "==", userEmail));
-            onSnapshot(q, (snapshot) => {
-                if(snapshot.empty) {
-                    alert("Unauthorized Access!"); window.location.href = 'index.html';
-                } else {
-                    loadAllData();
-                }
-            });
-        }
+        emailjs.init(GRIM_CONFIG.publicKey);
+
+        // Security Check
+        onAuthStateChanged(auth, (user) => {
+            if (user) loadAllData();
+            else window.location.href = 'access.html';
+        });
 
         window.showSection = (id) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -155,7 +150,7 @@
         };
 
         function loadAllData() {
-            // Load Homepage Items
+            // Load Items
             onSnapshot(collection(db, "services"), (snap) => {
                 const list = document.getElementById('items-list'); list.innerHTML = "";
                 document.getElementById('count-items').innerText = snap.size;
@@ -164,71 +159,87 @@
                 });
             });
 
-            // Load Requests
-            onSnapshot(query(collection(db, "requests"), where("status", "==", "pending")), (snap) => {
+            // Load Access Requests (Pending Only)
+            onSnapshot(query(collection(db, "users"), where("accountStatus", "==", "pending_approval")), (snap) => {
                 const list = document.getElementById('req-list'); list.innerHTML = "";
                 document.getElementById('count-reqs').innerText = snap.size;
                 snap.forEach(d => {
-                    list.innerHTML += `<tr><td>${d.data().email}</td><td>${d.data().service}</td><td><button class="btn" onclick="approveReq('${d.id}')">Send Key</button></td></tr>`;
-                });
-            });
-
-            // Load Inquiries
-            onSnapshot(collection(db, "inquiries"), (snap) => {
-                const list = document.getElementById('inquiry-list'); list.innerHTML = "";
-                document.getElementById('count-inq').innerText = snap.size;
-                snap.forEach(d => {
-                    const data = d.data();
+                    const user = d.data();
                     list.innerHTML += `
-                        <div class="card">
-                            <h4 style="color:var(--orange)">From: ${data.name} (${data.email})</h4>
-                            <p>${data.message}</p>
-                            <div class="reply-area">
-                                <textarea id="reply-${d.id}" placeholder="Type reply email..."></textarea>
-                                <button class="btn" onclick="replyEmail('${data.email}', '${d.id}')">Reply via Email</button>
-                            </div>
-                        </div>
-                    `;
+                        <tr>
+                            <td>${user.email}</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><button class="btn" onclick="approveUser('${d.id}', '${user.email}')">VERIFY & SEND KEYS</button></td>
+                        </tr>`;
                 });
             });
 
             // Load Admin Team
             onSnapshot(collection(db, "admins"), (snap) => {
-                const list = document.getElementById('admin-list'); list.innerHTML = "";
+                const list = document.getElementById('admin-list-body'); list.innerHTML = "";
                 snap.forEach(d => {
-                    list.innerHTML += `<tr><td>${d.data().email}</td><td>Authorized</td></tr>`;
+                    const adm = d.data();
+                    list.innerHTML += `
+                        <tr>
+                            <td>${adm.email}</td>
+                            <td>${adm.teleID || 'N/A'}</td>
+                            <td><button class="btn blue" onclick="sendDM('${adm.teleID}')">SEND DM</button></td>
+                        </tr>`;
                 });
             });
         }
 
+        // --- CORE FUNCTIONS ---
+
+        window.approveUser = async (uid, email) => {
+            if(!confirm("Verify this user and dispatch keys?")) return;
+            try {
+                const keys = {
+                    scr: "GS-SCR-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    mem: "GS-MEM-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                    sys: "GS-SYS-" + Math.random().toString(36).substring(2, 8).toUpperCase()
+                };
+
+                await updateDoc(doc(db, "users", uid), { accountStatus: "active", keys: keys });
+
+                await emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, {
+                    to_email: email,
+                    scr_key: keys.scr, mem_key: keys.mem, sys_key: keys.sys
+                });
+
+                const teleMsg = `✅ *USER VERIFIED*\nEmail: ${email}\nAction: Credentials Emailed.`;
+                await fetch(`https://api.telegram.org/bot${GRIM_CONFIG.botToken}/sendMessage?chat_id=${GRIM_CONFIG.adminGroupID}&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
+
+                alert("Verification Successful.");
+            } catch (e) { alert("Error dispatching keys."); }
+        };
+
         window.addItem = async () => {
             const name = document.getElementById('itemName').value;
             const description = document.getElementById('itemDesc').value;
-            if(!name || !description) return;
-            await addDoc(collection(db, "services"), { name, description });
-            alert("Added to Homepage!");
-            document.getElementById('itemName').value = ""; document.getElementById('itemDesc').value = "";
+            if(name && description) {
+                await addDoc(collection(db, "services"), { name, description });
+                alert("Published!");
+            }
         };
 
-        window.deleteItem = async (id) => { if(confirm("Delete item?")) await deleteDoc(doc(db, "services", id)); };
-
-        window.approveReq = async (id) => {
-            const key = prompt("Enter Access Key:");
-            if(key) await updateDoc(doc(db, "requests", id), { status: "approved", key: key });
+        window.registerAdmin = async () => {
+            const email = document.getElementById('adminMail').value;
+            const teleID = document.getElementById('adminTele').value;
+            if(email && teleID) {
+                await addDoc(collection(db, "admins"), { email, teleID });
+                alert("New Admin Authorized.");
+            }
         };
 
-        window.replyEmail = (email, id) => {
-            const msg = document.getElementById(`reply-${id}`).value;
-            window.location.href = `mailto:${email}?subject=GrimShadow Support&body=${msg}`;
+        window.sendDM = async (tid) => {
+            const m = prompt("Enter private command:");
+            if(m) fetch(`https://api.telegram.org/bot${GRIM_CONFIG.botToken}/sendMessage?chat_id=${tid}&text=${encodeURIComponent("🛡️ ADMIN DM: " + m)}`);
         };
 
-        window.addAdmin = async () => {
-            const email = document.getElementById('newAdminEmail').value;
-            if(email) await addDoc(collection(db, "admins"), { email: email });
-            alert("Sub-Admin Added!");
-        };
-
+        window.deleteItem = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "services", id)); };
         window.logout = () => signOut(auth).then(() => location.href = 'index.html');
+
     </script>
 </body>
 </html>
