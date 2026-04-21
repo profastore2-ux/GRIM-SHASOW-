@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIMADMIN | ELITE PANEL</title>
+    <title>GRIMADMIN | ULTIMATE PANEL</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
-        :root { --orange: #FF9F00; --dark: #050505; --card: #111; --red: #ff4444; }
-        body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; }
+        :root { --orange: #FF9F00; --dark: #050505; --card: #111; --red: #ff4444; --blue: #0088cc; }
+        body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; overflow-x: hidden; }
         
         /* Sidebar Navigation */
         .sidebar { width: 260px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; z-index: 100; }
         .sidebar h2 { color: var(--orange); letter-spacing: 2px; margin-bottom: 30px; border-bottom: 2px solid var(--orange); padding-bottom: 10px; font-size: 1.2rem; }
-        .nav-item { padding: 12px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 5px; font-size: 0.9rem; font-weight: bold; }
+        .nav-item { padding: 12px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; }
         .nav-item:hover, .nav-item.active { background: rgba(255, 159, 0, 0.1); color: var(--orange); }
 
         /* Main Area */
@@ -26,19 +26,23 @@
 
         /* Controls */
         input, textarea, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; box-sizing: border-box; }
-        .btn { background: var(--orange); color: #000; border: none; padding: 10px 18px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s; font-size: 0.85rem; }
-        .btn:hover { box-shadow: 0 0 15px var(--orange); transform: translateY(-2px); }
+        .btn { background: var(--orange); color: #000; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 5px; transition: 0.3s; font-size: 0.75rem; }
+        .btn:hover { box-shadow: 0 0 12px var(--orange); transform: translateY(-1px); }
         .btn.red { background: var(--red); color: #fff; }
-        .btn.blue { background: #0088cc; color: #fff; }
+        .btn.blue { background: var(--blue); color: #fff; }
 
         /* Tables */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #222; font-size: 0.85rem; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #222; font-size: 0.8rem; }
         th { color: var(--orange); text-transform: uppercase; letter-spacing: 1px; }
         
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
         .status-pending { background: #554400; color: #ffcc00; }
         .status-active { background: #004411; color: #00ff66; }
+        .status-banned { background: #440000; color: #ff4444; }
+
+        small { color: #888; font-family: monospace; }
+        .key-text { display: block; font-size: 0.7rem; margin-bottom: 2px; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -48,6 +52,7 @@
         <div class="nav-item active" onclick="showSection('overview')">OVERVIEW</div>
         <div class="nav-item" onclick="showSection('items')">ITEM MANAGEMENT</div>
         <div class="nav-item" onclick="showSection('requests')">ACCESS REQUESTS</div>
+        <div class="nav-item" onclick="showSection('user-db')">USER DATABASE</div>
         <div class="nav-item" onclick="showSection('admins')">ADMIN TEAM</div>
         <div class="nav-item" onclick="logout()" style="margin-top: 50px; color: var(--red);">SHUTDOWN</div>
     </div>
@@ -62,18 +67,19 @@
             </div>
         </div>
 
-        <div id="items" class="section">
-            <h1>ITEM REPOSITORY</h1>
-            <div class="card">
-                <h3>PUBLISH NEW SERVICE</h3>
-                <input type="text" id="itemName" placeholder="Service Name">
-                <textarea id="itemDesc" placeholder="Service Description..."></textarea>
-                <button class="btn" onclick="addItem()">PUBLISH LIVE</button>
-            </div>
-            <div class="card">
+        <div id="user-db" class="section">
+            <h1>ELITE USER DATABASE</h1>
+            <div class="card" style="overflow-x: auto;">
                 <table>
-                    <thead><tr><th>Name</th><th>Action</th></tr></thead>
-                    <tbody id="items-list"></tbody>
+                    <thead>
+                        <tr>
+                            <th>User / Last IP</th>
+                            <th>Category Keys</th>
+                            <th>Status</th>
+                            <th>Security Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="full-user-list"></tbody>
                 </table>
             </div>
         </div>
@@ -84,6 +90,22 @@
                 <table>
                     <thead><tr><th>User Email</th><th>Status</th><th>Verification</th></tr></thead>
                     <tbody id="req-list"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="items" class="section">
+            <h1>ITEM REPOSITORY</h1>
+            <div class="card">
+                <h3>PUBLISH NEW SERVICE</h3>
+                <input type="text" id="itemName" placeholder="Service Name">
+                <textarea id="itemDesc" placeholder="Service Description..."></textarea>
+                <button class="btn" onclick="addItem()">PUBLISH LIVE</button>
+            </div>
+            <div class="card">
+                <table id="items-table">
+                    <thead><tr><th>Name</th><th>Action</th></tr></thead>
+                    <tbody id="items-list"></tbody>
                 </table>
             </div>
         </div>
@@ -110,7 +132,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
@@ -125,18 +147,16 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- GRIMSHADOW AUTOMATION CONFIG ---
         const GRIM_CONFIG = {
             serviceID: "service_pvurqvo",
             templateID: "template_3jthuy8",
             publicKey: "le4jq10jrrE4sFDVH",
             botToken: "8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ",
-            adminGroupID: "-1003946509160" // ✅ ඔයා සොයාගත් ID එක
+            adminGroupID: "-1003946509160"
         };
 
         emailjs.init(GRIM_CONFIG.publicKey);
 
-        // Security Check
         onAuthStateChanged(auth, (user) => {
             if (user) loadAllData();
             else window.location.href = 'access.html';
@@ -146,7 +166,7 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            event.target.classList.add('active');
+            if(event) event.target.classList.add('active');
         };
 
         function loadAllData() {
@@ -154,92 +174,111 @@
             onSnapshot(collection(db, "services"), (snap) => {
                 const list = document.getElementById('items-list'); list.innerHTML = "";
                 document.getElementById('count-items').innerText = snap.size;
-                snap.forEach(d => {
-                    list.innerHTML += `<tr><td>${d.data().name}</td><td><button class="btn red" onclick="deleteItem('${d.id}')">Delete</button></td></tr>`;
-                });
+                snap.forEach(d => { list.innerHTML += `<tr><td>${d.data().name}</td><td><button class="btn red" onclick="deleteItem('${d.id}')">Delete</button></td></tr>`; });
             });
 
-            // Load Access Requests (Pending Only)
+            // Load Access Requests
             onSnapshot(query(collection(db, "users"), where("accountStatus", "==", "pending_approval")), (snap) => {
                 const list = document.getElementById('req-list'); list.innerHTML = "";
                 document.getElementById('count-reqs').innerText = snap.size;
                 snap.forEach(d => {
                     const user = d.data();
+                    list.innerHTML += `<tr><td>${user.email}</td><td><span class="status-badge status-pending">Pending</span></td><td><button class="btn" onclick="approveUser('${d.id}', '${user.email}')">VERIFY & SEND KEYS</button></td></tr>`;
+                });
+            });
+
+            // Load FULL USER DATABASE
+            onSnapshot(collection(db, "users"), (snap) => {
+                const list = document.getElementById('full-user-list'); list.innerHTML = "";
+                snap.forEach(d => {
+                    const user = d.data();
+                    const keys = user.keys || {scr: 'N/A', mem: 'N/A', sys: 'N/A'};
                     list.innerHTML += `
                         <tr>
-                            <td>${user.email}</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                            <td><button class="btn" onclick="approveUser('${d.id}', '${user.email}')">VERIFY & SEND KEYS</button></td>
+                            <td><strong>${user.email}</strong><br><small>IP: ${user.lastIP || 'Unknown'}</small></td>
+                            <td>
+                                <span class="key-text" style="color:var(--orange)">SCR: ${keys.scr}</span>
+                                <span class="key-text" style="color:var(--blue)">MEM: ${keys.mem}</span>
+                                <span class="key-text" style="color:var(--red)">SYS: ${keys.sys}</span>
+                            </td>
+                            <td><span class="status-badge status-${user.accountStatus}">${user.accountStatus}</span></td>
+                            <td>
+                                <button class="btn" onclick="resetUserKeys('${d.id}', '${user.email}')">RESET KEYS</button>
+                                <button class="btn blue" onclick="changeUserPass('${user.email}')">PASS RESET</button>
+                                <button class="btn red" onclick="toggleBan('${d.id}', '${user.accountStatus}')">${user.accountStatus === 'banned' ? 'UNBAN' : 'BAN'}</button>
+                            </td>
                         </tr>`;
                 });
             });
 
-            // Load Admin Team
+            // Load Admins
             onSnapshot(collection(db, "admins"), (snap) => {
                 const list = document.getElementById('admin-list-body'); list.innerHTML = "";
                 snap.forEach(d => {
                     const adm = d.data();
-                    list.innerHTML += `
-                        <tr>
-                            <td>${adm.email}</td>
-                            <td>${adm.teleID || 'N/A'}</td>
-                            <td><button class="btn blue" onclick="sendDM('${adm.teleID}')">SEND DM</button></td>
-                        </tr>`;
+                    list.innerHTML += `<tr><td>${adm.email}</td><td>${adm.teleID || 'N/A'}</td><td><button class="btn blue" onclick="sendDM('${adm.teleID}')">SEND DM</button></td></tr>`;
                 });
             });
         }
 
-        // --- CORE FUNCTIONS ---
+        // --- CORE LOGIC ---
 
         window.approveUser = async (uid, email) => {
-            if(!confirm("Verify this user and dispatch keys?")) return;
-            try {
-                const keys = {
-                    scr: "GS-SCR-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-                    mem: "GS-MEM-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-                    sys: "GS-SYS-" + Math.random().toString(36).substring(2, 8).toUpperCase()
-                };
+            if(!confirm("Approve this user?")) return;
+            const keys = {
+                scr: "GS-SCR-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                mem: "GS-MEM-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                sys: "GS-SYS-" + Math.random().toString(36).substring(2, 8).toUpperCase()
+            };
+            await updateDoc(doc(db, "users", uid), { accountStatus: "active", keys: keys });
+            await emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, { to_email: email, ...keys });
+            alert("Verified.");
+        };
 
-                await updateDoc(doc(db, "users", uid), { accountStatus: "active", keys: keys });
+        window.resetUserKeys = async (uid, email) => {
+            if(!confirm("Generate and email new keys for " + email + "?")) return;
+            const newKeys = {
+                scr: "GS-SCR-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                mem: "GS-MEM-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                sys: "GS-SYS-" + Math.random().toString(36).substring(2, 8).toUpperCase()
+            };
+            await updateDoc(doc(db, "users", uid), { keys: newKeys });
+            await emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, { to_email: email, ...newKeys });
+            alert("Keys reset and emailed.");
+        };
 
-                await emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, {
-                    to_email: email,
-                    scr_key: keys.scr, mem_key: keys.mem, sys_key: keys.sys
-                });
+        window.toggleBan = async (uid, currentStatus) => {
+            const nextStatus = currentStatus === 'banned' ? 'active' : 'banned';
+            if(confirm(`Set user status to ${nextStatus.toUpperCase()}?`)) {
+                await updateDoc(doc(db, "users", uid), { accountStatus: nextStatus });
+            }
+        };
 
-                const teleMsg = `✅ *USER VERIFIED*\nEmail: ${email}\nAction: Credentials Emailed.`;
-                await fetch(`https://api.telegram.org/bot${GRIM_CONFIG.botToken}/sendMessage?chat_id=${GRIM_CONFIG.adminGroupID}&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
-
-                alert("Verification Successful.");
-            } catch (e) { alert("Error dispatching keys."); }
+        window.changeUserPass = (email) => {
+            if(confirm("Send password reset link to " + email + "?")) {
+                sendPasswordResetEmail(auth, email).then(() => alert("Reset Link Sent!"));
+            }
         };
 
         window.addItem = async () => {
-            const name = document.getElementById('itemName').value;
-            const description = document.getElementById('itemDesc').value;
-            if(name && description) {
-                await addDoc(collection(db, "services"), { name, description });
-                alert("Published!");
-            }
+            const n = document.getElementById('itemName').value;
+            const d = document.getElementById('itemDesc').value;
+            if(n && d) { await addDoc(collection(db, "services"), { name: n, description: d }); alert("Added!"); }
         };
 
         window.registerAdmin = async () => {
-            const email = document.getElementById('adminMail').value;
-            const teleID = document.getElementById('adminTele').value;
-            if(email && teleID) {
-                await addDoc(collection(db, "admins"), { email, teleID });
-                alert("New Admin Authorized.");
-            }
+            const e = document.getElementById('adminMail').value;
+            const t = document.getElementById('adminTele').value;
+            if(e && t) { await addDoc(collection(db, "admins"), { email: e, teleID: t }); alert("Admin Added."); }
         };
 
         window.sendDM = async (tid) => {
-            const m = prompt("Enter private command:");
-            if(m) fetch(`https://api.telegram.org/bot${GRIM_CONFIG.botToken}/sendMessage?chat_id=${tid}&text=${encodeURIComponent("🛡️ ADMIN DM: " + m)}`);
+            const m = prompt("Enter private message:");
+            if(m) fetch(`https://api.telegram.org/bot${GRIM_CONFIG.botToken}/sendMessage?chat_id=${tid}&text=${encodeURIComponent("🛡️ ADMIN COMMAND: " + m)}`);
         };
 
         window.deleteItem = async (id) => { if(confirm("Delete?")) await deleteDoc(doc(db, "services", id)); };
         window.logout = () => signOut(auth).then(() => location.href = 'index.html');
-
     </script>
 </body>
 </html>
