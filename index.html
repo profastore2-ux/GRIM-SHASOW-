@@ -3,81 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIMSHADOW CORE</title>
+    <title>GRIMSHADOW | Cyber Security & Ethical Hacking</title>
     <style>
-        :root { --neon: #FF9F00; --dark: #000; --card-bg: rgba(10, 10, 10, 0.75); } /* --card-bg එක තවත් Transparent කළා */
-        
-        body { 
-            margin: 0; padding: 0; background: var(--dark); color: #fff; 
-            font-family: 'Courier New', monospace; overflow-x: hidden; 
-            /* 💾 බැක්ග්‍රවුන්ඩ් එක මෙතැනට දැම්මා */
-            background-image: url('image_16.png'); /* 💡 පස්සේ ඔයාගේම ලින්ක් එකක් දාන්න */
-            background-size: cover; background-position: center; background-attachment: fixed;
+        :root {
+            --orange: #FF9F00; 
+            --dark: #050505;
+            --card-bg: rgba(14, 14, 14, 0.7); /* පින්තූරය පේන්න Transparent කළා */
+            --text-sub: #bbbbbb;
         }
 
-        .main-wrapper { 
-            display: flex; flex-direction: column; align-items: center; 
-            min-height: 100vh; padding: 40px 20px; box-sizing: border-box; 
-            background: rgba(0, 0, 0, 0.4); /* 💡 පින්තූරය උඩින් තියෙන Overlay එක 0.7 ඉඳන් 0.4 දක්වා අඩු කළා */
+        body {
+            margin: 0; padding: 0; background-color: var(--dark);
+            color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden;
+            /* 💾 බැක්ග්‍රවුන්ඩ් එක image_16.png ලෙස වෙනස් කළා */
+            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('image_16.png'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed;
         }
 
-        h1.brand { 
-            color: var(--neon) !important; 
-            text-shadow: 0 0 20px var(--neon) !important; 
-            text-align: center; 
-            letter-spacing: 10px !important; 
-            margin-bottom: 20px; 
-            font-size: 4rem !important; 
+        /* 1. NAVBAR - Mobile Responsive Fix */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 80px; background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            border-bottom: 1px solid rgba(255, 159, 0, 0.2); box-sizing: border-box;
+        }
+        .nav-logo img { height: 45px; } /* ලෝගෝ නම image_13.png ලෙස පහළ ඇත */
+
+        .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; }
+        .nav-links a { text-decoration: none; color: #fff; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
+        .nav-links a:hover { color: var(--orange); }
+
+        /* 2. HERO SECTION */
+        .hero {
+            height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0, 0, 0, 0.2); /* බැක්ග්‍රවුන්ඩ් එක පේන්න අගය අඩු කළා */
+            text-align: center; padding: 0 20px;
+        }
+        .hero h1 { 
+            font-size: 5rem; /* ලොකු නම */
+            letter-spacing: 10px; 
+            margin: 0; 
             text-transform: uppercase;
+            font-weight: 900;
         }
+        .hero h1 span { color: var(--orange); text-shadow: 0 0 20px var(--orange); }
 
-        .portal-btn {
-            background: transparent; border: 2px solid var(--neon); color: var(--neon);
-            padding: 15px 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 3px; border-radius: 5px;
-            transition: 0.3s; margin-bottom: 50px; text-decoration: none; display: inline-block;
+        /* 3. STATS BAR */
+        .stats-bar {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex; justify-content: center;
+            gap: 100px; padding: 40px; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
         }
-        .portal-btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 20px var(--neon); }
+        .stat-item h3 { color: var(--orange); margin: 0; font-size: 2rem; text-shadow: 0 0 10px var(--orange); }
+        .stat-item p { color: #fff; margin: 5px 0 0 0; font-size: 0.8rem; font-weight: bold; }
 
-        .container { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; 
-            max-width: 1200px; width: 100%; z-index: 1; 
-        }
+        /* 4. GRID SECTION */
+        .services { padding: 100px 40px; max-width: 1300px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
 
-        .card { 
-            background: var(--card-bg); /* විනිවිද පෙනෙන කාඩ් පසුබිම */
-            border: 1px solid #333; /* Border එක ටිකක් පැහැදිලි කළා */
-            padding: 30px; 
-            border-radius: 5px; transition: 0.3s; cursor: pointer; backdrop-filter: blur(8px); /* Blur එකක් එකතු කළා */
+        .card {
+            background: var(--card-bg); border: 1px solid #222;
+            padding: 40px; border-radius: 8px; transition: 0.4s; cursor: pointer;
+            position: relative; overflow: hidden; backdrop-filter: blur(10px);
         }
-        .card:hover { border-color: var(--neon); box-shadow: 0 0 20px rgba(255, 159, 0, 0.3); transform: translateY(-5px); }
-        
-        .card h3 { color: var(--neon); margin-top: 0; font-size: 1.2rem; }
+        .card:hover { 
+            border-color: var(--orange); 
+            transform: translateY(-10px);
+            background: rgba(14, 14, 14, 0.85);
+            box-shadow: 0 0 30px rgba(255, 159, 0, 0.2);
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0; height: 3px;
+            background: var(--orange); transition: 0.4s;
+        }
+        .card:hover::before { width: 100%; }
+        .card h3 { color: var(--orange); margin: 0 0 15px 0; font-size: 1.2rem; }
         .card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
 
-        @media (max-width: 900px) { .container { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
-        @media (max-width: 600px) {
-            h1.brand { font-size: 2rem !important; letter-spacing: 4px !important; } 
-            .portal-btn { padding: 10px 20px; font-size: 0.9rem; }
-            .container { grid-template-columns: 1fr; gap: 15px; } 
-            .card { padding: 20px; }
+        /* 5. CLIENT STORIES */
+        .testimonials { padding: 100px 20px; background: rgba(8, 8, 8, 0.7); backdrop-filter: blur(10px); text-align: center; }
+        .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1200px; margin: 50px auto 0; }
+        .test-card { background: #111; padding: 30px; border-radius: 8px; border-left: 4px solid var(--orange); text-align: left; transition: 0.3s; }
+        .test-card:hover { transform: scale(1.02); }
+        .test-card p { font-style: italic; color: #ddd; font-size: 0.95rem; }
+        .test-card span { color: var(--orange); display: block; margin-top: 15px; font-weight: bold; }
+
+        /* 📱 MOBILE RESPONSIVE FIX (කිසිවක් අයින් නොවේ) */
+        @media (max-width: 900px) {
+            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
+            .nav-links { gap: 15px; justify-content: center; }
+            .hero { height: auto; padding: 180px 20px 100px; }
+            .hero h1 { font-size: 2.8rem; letter-spacing: 5px; }
+            .stats-bar { flex-direction: column; gap: 40px; text-align: center; align-items: center; }
+            .grid, .test-grid { grid-template-columns: 1fr; }
+            .services { padding: 60px 20px; }
+            .navbar button { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="main-wrapper">
-        <h1 class="brand">GRIMSHADOW</h1>
-        
-        <a href="access.html" class="portal-btn">ACCESS PORTAL</a>
 
-        <div class="container">
-            <div class="card" onclick="location.href='access.html'"><h3>SYSTEM PURGE</h3><p>Next-generation kernel optimization, memory cleaning, and digital footprint elimination...</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>MEMORY HUB</h3><p>Live memory offset monitoring, secure data injection, and advanced debugging tools...</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>SCRIPTS & MODS</h3><p>Premium repositories for custom Lua and C++ tools. [ KEY REQUIRED ]</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>TECH CONSULTING</h3><p>Expert consulting on cyber security, network architecture, and custom tool development...</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>FORUM ACCESS</h3><p>Private discussion forums for verified members. Share knowledge and collaborate...</p></div>
-            <div class="card" onclick="location.href='access.html'"><h3>DIRECT CONTACT</h3><p>Send secure, encrypted messages. For special requests or service inquiries...</p></div>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <img src="image_13.png" alt="Logo">
         </div>
+        <ul class="nav-links">
+            <li><a href="#">SYSTEMS</a></li>
+            <li><a href="#">DOWNLOADS</a></li>
+            <li><a href="#">SERVICES</a></li>
+        </ul>
+        <button style="background:var(--orange); border:none; padding:10px 25px; font-weight:900; cursor:pointer; border-radius: 5px; text-transform: uppercase;" onclick="location.href='access.html'">LOGIN</button>
+    </nav>
+
+    <header class="hero">
+        <img src="image_13.png" style="height: 180px; margin-bottom: 30px; filter: drop-shadow(0 0 15px var(--orange));">
+        <h1>WELCOME TO <span>GRIMSHADOW</span></h1>
+        <p style="color:#fff; font-size: 1.1rem; max-width: 700px; font-weight: bold; text-shadow: 2px 2px 4px #000;">
+            The #1 source for next-gen kernel optimization and secure asset management.
+        </p>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-item"><h3>15.4K+</h3><p>GANG MEMBERS</p></div>
+        <div class="stat-item"><h3>$50B+</h3><p>CASH DELIVERED</p></div>
+        <div class="stat-item"><h3>LIFETIME</h3><p>BAN WARRANTY</p></div>
+        <div class="stat-item"><h3>INSTANT</h3><p>DELIVERY TIME</p></div>
     </div>
+
+    <section class="services">
+        <div class="grid">
+            <div class="card" onclick="location.href='access.html'"><h3>SYSTEM PURGE</h3><p>Next-generation kernel optimization, memory cleaning, and digital footprint elimination for elite privacy.</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>MEMORY HUB</h3><p>Live memory offset monitoring and advanced debugging tools designed for modern developers.</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>SCRIPTS & MODS</h3><p>Premium repositories for custom Lua and C++ tools. Secure and undetected. [ KEY REQUIRED ]</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>TECH CONSULTING</h3><p>Expert consulting on cyber security architecture and custom penetration testing requests.</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>FORUM ACCESS</h3><p>Private discussion forums for verified members to share deep-web knowledge and research.</p></div>
+            <div class="card" onclick="location.href='access.html'"><h3>DIRECT CONTACT</h3><p>Send secure, end-to-end encrypted messages directly to our core team. Response < 12h.</p></div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <h2 style="letter-spacing: 5px; font-size: 2rem;">CLIENT <span style="color:var(--orange);">STORIES</span></h2>
+        <div class="test-grid">
+            <div class="test-card"><p>"The best service in the market. Fast and secure. My assets have never been safer."</p><span>- Shadow Gaming</span></div>
+            <div class="test-card"><p>"Excellent support and high-quality tools. The kernel optimization is a game changer."</p><span>- Achira Liyanage</span></div>
+            <div class="test-card"><p>"Highly recommended for anyone looking for premium, reliable tools. Worth every cent."</p><span>- Nimesh SL</span></div>
+        </div>
+    </section>
+
 </body>
 </html>
