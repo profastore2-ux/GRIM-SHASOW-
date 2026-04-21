@@ -5,23 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRIMSHADOW | USER TERMINAL</title>
     <style>
-        :root { --orange: #FF9F00; --dark: #050505; --card: #111; }
+        :root { --orange: #FF9F00; --dark: #050505; --card: #111; --red: #ff4444; }
         body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; }
+        
+        /* Sidebar Navigation */
         .sidebar { width: 250px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; }
-        .sidebar h2 { color: var(--orange); font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 40px; }
-        .nav-item { padding: 15px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px; }
+        .sidebar h2 { color: var(--orange); font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 40px; border-bottom: 2px solid var(--orange); padding-bottom: 10px; }
+        .nav-item { padding: 15px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px; font-weight: bold; font-size: 0.85rem; }
         .nav-item:hover, .nav-item.active { background: rgba(255, 159, 0, 0.1); color: var(--orange); }
+
+        /* Main Area */
         .main { margin-left: 250px; width: calc(100% - 250px); padding: 40px; box-sizing: border-box; }
         .section { display: none; }
         .section.active { display: block; }
+        
         .card { background: var(--card); border: 1px solid #222; padding: 25px; border-radius: 10px; margin-bottom: 20px; }
-        .orange-btn { background: var(--orange); color: #000; border: none; padding: 12px 25px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 10px; }
-        select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; }
-        .key-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #222; }
-        #chat-box { height: 250px; overflow-y: auto; background: #000; padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #222; }
-        .msg { margin-bottom: 10px; padding: 10px; border-radius: 5px; max-width: 80%; font-size: 0.9rem; }
-        .msg.admin { background: #222; align-self: flex-start; }
-        .msg.user { background: rgba(255, 159, 0, 0.2); margin-left: auto; text-align: right; }
+        
+        /* Status UI */
+        .status-msg { padding: 15px; border-radius: 8px; margin-bottom: 25px; font-weight: bold; border: 1px solid transparent; }
+        .pending { background: rgba(255, 159, 0, 0.1); border-color: var(--orange); color: var(--orange); }
+        .active-status { background: rgba(0, 255, 102, 0.1); border-color: #00ff66; color: #00ff66; }
+
+        /* Key Boxes */
+        .key-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
+        .key-box { background: #000; border: 1px dashed #333; padding: 15px; border-radius: 8px; text-align: center; }
+        .key-label { font-size: 0.7rem; color: var(--orange); text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .key-val { font-family: 'Courier New', monospace; font-size: 0.95rem; color: #fff; word-break: break-all; }
+
+        /* Controls */
+        .orange-btn { background: var(--orange); color: #000; border: none; padding: 12px 25px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .orange-btn:hover { box-shadow: 0 0 15px var(--orange); }
+        textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; margin-bottom: 15px; resize: none; }
+
+        /* Chat System */
+        #chat-box { height: 300px; overflow-y: auto; background: #000; padding: 15px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #222; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 8px; max-width: 80%; font-size: 0.85rem; line-height: 1.4; }
+        .msg.admin { background: #222; color: #eee; align-self: flex-start; border-left: 3px solid var(--orange); }
+        .msg.user { background: rgba(255, 159, 0, 0.15); color: #fff; align-self: flex-end; text-align: right; border-right: 3px solid var(--orange); }
     </style>
 </head>
 <body>
@@ -29,43 +49,56 @@
     <div class="sidebar">
         <h2>GRIMSHADOW</h2>
         <div class="nav-item active" onclick="showSection('dash')">DASHBOARD</div>
-        <div class="nav-item" onclick="showSection('keys')">MY KEYS</div>
-        <div class="nav-item" onclick="showSection('messages')">MESSAGES</div>
-        <div class="nav-item" onclick="logout()" style="margin-top: 100px; color: #ff4444;">LOGOUT</div>
+        <div class="nav-item" onclick="showSection('messages')">SECURE CHAT</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: 100px; color: var(--red);">LOGOUT</div>
     </div>
 
     <div class="main">
         <div id="dash" class="section active">
-            <h1>WELCOME, <span id="user-display-name" style="color:var(--orange)">User</span></h1>
-            <div class="card">
-                <h3>REQUEST NEW ACCESS</h3>
-                <select id="service-select">
-                    <option value="SYSTEM PURGE">SYSTEM PURGE</option>
-                    <option value="SCRIPTS & MODS">SCRIPTS & MODS</option>
-                    <option value="MEMORY HUB">MEMORY HUB</option>
-                </select>
-                <button class="orange-btn" onclick="requestKey()">SUBMIT REQUEST</button>
-            </div>
-        </div>
+            <h1>TERMINAL: <span id="user-display-name" style="color:var(--orange)">User</span></h1>
+            
+            <div id="status-container"></div>
 
-        <div id="keys" class="section">
-            <h1>MY ACCESS KEYS</h1>
-            <div class="card" id="keys-list"><p style="color:#444">No keys yet.</p></div>
+            <div id="keys-card" class="card" style="display: none;">
+                <h3>🛡️ ASSIGNED ACCESS KEYS</h3>
+                <div class="key-grid">
+                    <div class="key-box">
+                        <span class="key-label">Scripts (SCR)</span>
+                        <div class="key-val" id="key-scr">NOT_FOUND</div>
+                    </div>
+                    <div class="key-box">
+                        <span class="key-label">Memory (MEM)</span>
+                        <div class="key-val" id="key-mem">NOT_FOUND</div>
+                    </div>
+                    <div class="key-box">
+                        <span class="key-label">System (SYS)</span>
+                        <div class="key-val" id="key-sys">NOT_FOUND</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="request-card" class="card" style="display: none;">
+                <h3>ACCESS RESTRICTED</h3>
+                <p style="color: #666; font-size: 0.9rem;">Your account is not yet verified. Request system access to receive your encrypted keys.</p>
+                <button class="orange-btn" onclick="sendGrimRequest()">INITIALIZE VERIFICATION</button>
+            </div>
         </div>
 
         <div id="messages" class="section">
             <h1>SECURE MESSAGES</h1>
             <div class="card">
                 <div id="chat-box"></div>
-                <textarea id="msg-input" placeholder="Message Admin..."></textarea>
-                <button class="orange-btn" onclick="sendMessage()">SEND</button>
+                <div style="display: flex; gap: 10px;">
+                    <textarea id="msg-input" placeholder="Secure message to Admin..." rows="2"></textarea>
+                    <button class="orange-btn" onclick="sendMessage()" style="width: 100px; height: 50px; margin: 0;">SEND</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, addDoc, collection, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -85,8 +118,8 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userUID = user.uid;
-                document.getElementById('user-display-name').innerText = user.email.split('@')[0];
-                listenToKeys();
+                document.getElementById('user-display-name').innerText = user.email.split('@')[0].toUpperCase();
+                syncDashboard(user.uid);
                 listenToMessages();
             } else {
                 window.location.href = 'access.html';
@@ -97,36 +130,64 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
         };
 
-        window.requestKey = async () => {
-            await addDoc(collection(db, "requests"), {
-                uid: userUID,
-                email: auth.currentUser.email,
-                service: document.getElementById('service-select').value,
-                status: "pending",
-                key: "",
-                timestamp: serverTimestamp()
-            });
-            alert("Sent!");
-        };
+        // --- DASHBOARD SYNC LOGIC ---
+        function syncDashboard(uid) {
+            onSnapshot(doc(db, "users", uid), (d) => {
+                const data = d.data();
+                const statusDiv = document.getElementById('status-container');
+                const keysCard = document.getElementById('keys-card');
+                const requestCard = document.getElementById('request-card');
 
-        function listenToKeys() {
-            const q = query(collection(db, "requests"), where("uid", "==", userUID));
-            onSnapshot(q, (snapshot) => {
-                const list = document.getElementById('keys-list');
-                list.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    list.innerHTML += `<div class="key-item"><strong>${data.service}</strong> <span>${data.key || 'PENDING'}</span></div>`;
-                });
+                if (!data || !data.accountStatus) {
+                    requestCard.style.display = "block";
+                    return;
+                }
+
+                if (data.accountStatus === "pending_approval") {
+                    statusDiv.innerHTML = `<div class="status-msg pending">⏳ VERIFICATION PENDING: Admins have been notified. Please wait.</div>`;
+                    requestCard.style.display = "none";
+                    keysCard.style.display = "block"; // Still show boxes but they will have defaults
+                } 
+                else if (data.accountStatus === "active") {
+                    statusDiv.innerHTML = `<div class="status-msg active-status">✅ SYSTEM ACTIVE: Encrypted access granted.</div>`;
+                    requestCard.style.display = "none";
+                    keysCard.style.display = "block";
+                    // Map keys from Firestore
+                    document.getElementById('key-scr').innerText = data.keys.scr;
+                    document.getElementById('key-mem').innerText = data.keys.mem;
+                    document.getElementById('key-sys').innerText = data.keys.sys;
+                }
             });
         }
 
+        window.sendGrimRequest = async () => {
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                
+                await updateDoc(doc(db, "users", userUID), { accountStatus: "pending_approval" });
+
+                // Telegram Alert to Admin Group
+                const teleMsg = `🚨 *NEW REQUEST*\nUser: ${auth.currentUser.email}\nIP: ${ipData.ip}\nStatus: Waiting for Approval.`;
+                await fetch(`https://api.telegram.org/bot8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ/sendMessage?chat_id=-1003946509160&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
+
+                alert("Request initialized. Admin notified.");
+            } catch (e) { alert("Error initializing request."); }
+        };
+
+        // --- SECURE CHAT LOGIC ---
         window.sendMessage = async () => {
             const text = document.getElementById('msg-input').value;
-            if(!text) return;
-            await addDoc(collection(db, "chats"), { uid: userUID, text: text, sender: "user", timestamp: serverTimestamp() });
+            if(!text || !userUID) return;
+            await addDoc(collection(db, "chats"), { 
+                uid: userUID, 
+                text: text, 
+                sender: "user", 
+                timestamp: serverTimestamp() 
+            });
             document.getElementById('msg-input').value = "";
         };
 
