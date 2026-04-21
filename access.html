@@ -10,50 +10,55 @@
             margin: 0; padding: 0; background: var(--dark); color: #fff; 
             font-family: 'Inter', sans-serif; display: flex; justify-content: center; 
             align-items: center; height: 100vh; overflow: hidden;
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('image_16.png');
+            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('image_16.png');
             background-size: cover; background-position: center;
         }
         .login-card {
-            background: rgba(15, 15, 15, 0.9); padding: 40px; border-radius: 10px;
+            background: rgba(15, 15, 15, 0.95); padding: 45px; border-radius: 12px;
             border: 1px solid rgba(255, 159, 0, 0.2); width: 100%; max-width: 400px;
-            text-align: center; backdrop-filter: blur(10px);
+            text-align: center; backdrop-filter: blur(15px); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
-        .login-card img { height: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--orange)); }
-        h2 { color: var(--orange); letter-spacing: 3px; margin-bottom: 30px; text-transform: uppercase; }
+        .login-card img { height: 90px; margin-bottom: 25px; filter: drop-shadow(0 0 15px var(--orange)); }
+        h2 { color: var(--orange); letter-spacing: 4px; margin-bottom: 30px; text-transform: uppercase; font-weight: 900; }
         input {
             width: 100%; padding: 15px; margin-bottom: 15px; background: #000;
-            border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box;
-            outline: none; transition: 0.3s;
+            border: 1px solid #222; color: #fff; border-radius: 5px; box-sizing: border-box;
+            outline: none; transition: 0.3s; font-size: 0.9rem;
         }
-        input:focus { border-color: var(--orange); box-shadow: 0 0 10px rgba(255, 159, 0, 0.2); }
+        input:focus { border-color: var(--orange); box-shadow: 0 0 12px rgba(255, 159, 0, 0.3); }
         .btn {
-            width: 100%; padding: 15px; background: var(--orange); color: #000;
-            border: none; border-radius: 5px; font-weight: bold; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+            width: 100%; padding: 16px; background: var(--orange); color: #000;
+            border: none; border-radius: 5px; font-weight: 900; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; font-size: 0.85rem;
         }
-        .btn:hover { background: #e68e00; box-shadow: 0 0 20px var(--orange); transform: translateY(-2px); }
-        .toggle-text { margin-top: 20px; font-size: 0.85rem; color: #888; }
-        .toggle-text span { color: var(--orange); cursor: pointer; font-weight: bold; }
-        #error-msg { color: #ff4444; font-size: 0.85rem; margin-top: 15px; display: none; }
+        .btn:hover { background: #fff; box-shadow: 0 0 25px var(--orange); transform: translateY(-2px); }
+        .toggle-text { margin-top: 25px; font-size: 0.8rem; color: #666; letter-spacing: 1px; }
+        .toggle-text span { color: var(--orange); cursor: pointer; font-weight: bold; text-decoration: underline; }
+        #error-msg { 
+            color: #ff4444; background: rgba(255, 68, 68, 0.1); 
+            padding: 10px; border-radius: 4px; font-size: 0.75rem; 
+            margin-top: 15px; display: none; border: 1px solid rgba(255, 68, 68, 0.2);
+        }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <img src="image_13.png" alt="Logo">
+        <img src="image_13.png" alt="GrimShadow Logo">
         <h2 id="form-title">Login</h2>
-        <input type="email" id="email" placeholder="Email Address">
-        <input type="password" id="password" placeholder="Password">
+        <input type="email" id="email" placeholder="TERMINAL EMAIL">
+        <input type="password" id="password" placeholder="ENCRYPTED PASSWORD">
         <button class="btn" id="main-btn" onclick="handleAuth()">Access Terminal</button>
         <p id="error-msg"></p>
         <p class="toggle-text" id="toggle-wrapper">
-            Don't have an account? <span onclick="toggleForm()">Register Here</span>
+            New operative? <span onclick="toggleForm()">Register Account</span>
         </p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
@@ -67,38 +72,79 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         let isLogin = true;
 
         window.toggleForm = () => {
             isLogin = !isLogin;
             document.getElementById('form-title').innerText = isLogin ? 'Login' : 'Register';
-            document.getElementById('main-btn').innerText = isLogin ? 'Access Terminal' : 'Create Account';
+            document.getElementById('main-btn').innerText = isLogin ? 'Access Terminal' : 'Initialize Profile';
             document.getElementById('toggle-wrapper').innerHTML = isLogin ? 
-                `Don't have an account? <span onclick="toggleForm()">Register Here</span>` : 
-                `Already have an account? <span onclick="toggleForm()">Login Here</span>`;
+                `New operative? <span onclick="toggleForm()">Register Account</span>` : 
+                `Already verified? <span onclick="toggleForm()">Login to Terminal</span>`;
         };
 
         window.handleAuth = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error-msg');
+            
             if(!email || !password) return;
+            errorElement.style.display = 'none';
 
             try {
+                // Get Current IP
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+
                 if(isLogin) {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    // --- LOGIN LOGIC ---
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Check if Banned
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists() && userDoc.data().accountStatus === 'banned') {
+                        await signOut(auth);
+                        throw new Error("CRITICAL: Your access has been permanently revoked.");
+                    }
+
+                    // Update Last Login IP
+                    await updateDoc(doc(db, "users", user.uid), { lastIP: ipData.ip });
+                    window.location.href = 'user-dash.html';
+
                 } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
+                    // --- REGISTER LOGIC ---
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Create User Profile in Firestore
+                    await setDoc(doc(db, "users", user.uid), {
+                        email: user.email,
+                        uid: user.uid,
+                        accountStatus: "pending_approval", // මුලින්ම Pending වැටෙන්නේ
+                        lastIP: ipData.ip,
+                        joinedAt: serverTimestamp(),
+                        keys: { scr: "LOCKED", mem: "LOCKED", sys: "LOCKED" }
+                    });
+                    window.location.href = 'user-dash.html';
                 }
-                window.location.href = 'user-dash.html';
             } catch (error) {
-                const errorElement = document.getElementById('error-msg');
-                errorElement.innerText = error.message;
+                errorElement.innerText = error.message.replace("Firebase: ", "");
                 errorElement.style.display = 'block';
             }
         };
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) { window.location.href = 'user-dash.html'; }
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // සයිට් එකට එනකොටම Ban ද කියලා චෙක් කිරීම
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists() && userDoc.data().accountStatus === 'banned') {
+                    await signOut(auth);
+                } else {
+                    window.location.href = 'user-dash.html';
+                }
+            }
         });
     </script>
 </body>
