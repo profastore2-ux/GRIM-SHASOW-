@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIMSHADOW | SECURE VAULT</title>
+    <style>
+        :root {
+            --orange: #FF9F00; 
+            --dark: #050505;
+            --card-bg: rgba(14, 14, 14, 0.95);
+        }
+
+        body {
+            margin: 0; padding: 0; background-color: var(--dark);
+            color: #fff; font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('image_16.png'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 80px; background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000;
+            border-bottom: 1px solid rgba(255, 159, 0, 0.2); box-sizing: border-box;
+        }
+        .nav-logo img { height: 40px; cursor: pointer; }
+
+        /* VAULT HEADER */
+        .vault-header { padding: 120px 40px 40px 40px; text-align: center; }
+        .vault-header h1 { font-size: 3rem; text-transform: uppercase; letter-spacing: 5px; margin: 0; }
+        .vault-header span { color: var(--orange); }
+
+        /* STORE GRID */
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; 
+        }
+
+        /* ITEM CARD (CLEAN STYLE) */
+        .item-card {
+            background: var(--card-bg);
+            border: 1px solid #222;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .item-card:hover {
+            border-color: var(--orange);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .img-box { width: 100%; height: 200px; background: #000; position: relative; overflow: hidden; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.3s; }
+        .item-card:hover .img-box img { opacity: 1; transform: scale(1.05); }
+
+        .details { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .details h3 { margin: 0 0 10px 0; font-size: 1.1rem; text-transform: uppercase; color: #fff; letter-spacing: 1px; }
+        .details p { color: #888; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px; flex-grow: 1; }
+        
+        .author-box { font-size: 0.75rem; color: var(--orange); margin-bottom: 12px; display: block; font-weight: bold; text-transform: uppercase; }
+
+        /* INSTALLATION GUIDE BOX */
+        details { background: #000; padding: 12px; border-radius: 6px; margin-bottom: 20px; cursor: pointer; border: 1px solid #1a1a1a; transition: 0.3s; }
+        details:hover { border-color: #333; }
+        summary { font-size: 0.8rem; color: #aaa; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        details p { font-size: 0.8rem !important; color: #bbb !important; margin-top: 10px; line-height: 1.5; border-top: 1px solid #111; padding-top: 10px; }
+
+        .download-btn {
+            background: #fff; color: #000; border: none;
+            padding: 14px; width: 100%; font-weight: 900;
+            text-transform: uppercase; cursor: pointer; transition: 0.3s;
+            font-size: 0.85rem; border-radius: 4px; letter-spacing: 1px;
+        }
+        .download-btn:hover { background: var(--orange); transform: scale(1.02); }
+
+        #loader { text-align: center; padding: 100px; font-weight: bold; color: var(--orange); letter-spacing: 2px; }
+
+        @media (max-width: 800px) {
+            .navbar { padding: 15px 20px; }
+            .grid { grid-template-columns: 1fr; }
+            .vault-header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-logo" onclick="location.href='index.html'"><img src="image_13.png" alt="GrimShadow"></div>
+        <div style="color: var(--orange); font-weight: 900; font-size: 0.8rem; letter-spacing: 2px;" id="vault-title">LOADING VAULT...</div>
+        <button style="background:none; border:1px solid #333; color:#fff; padding:8px 15px; cursor:pointer; font-size: 0.7rem; border-radius: 4px;" onclick="location.href='user-dash.html'">ACCESS DASHBOARD</button>
+    </nav>
+
+    <div class="vault-header">
+        <h1 id="main-title">SECURE <span>VAULT</span></h1>
+        <p id="sub-title" style="color: #666; font-size: 0.85rem; margin-top: 10px; letter-spacing: 1px;">GRIMSHADOW ENCRYPTED REPOSITORY v2.0</p>
+    </div>
+
+    <div class="container">
+        <div id="loader">ESTABLISHING SECURE HANDSHAKE...</div>
+        <div class="grid" id="vault-grid"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
+            authDomain: "grimshadow-hq.firebaseapp.com",
+            projectId: "grimshadow-hq",
+            storageBucket: "grimshadow-hq.firebasestorage.app",
+            messagingSenderId: "849130104157",
+            appId: "1:849130104157:web:360c94b263a052ff15f4b4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('cat') || 'SCR';
+
+        document.getElementById('vault-title').innerText = `${category} CATEGORY ACCESS`;
+        document.getElementById('main-title').innerHTML = `${category} <span>VAULT</span>`;
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                alert("Security Alert: Unauthorized access detected. Redirecting to Portal.");
+                window.location.href = 'access.html';
+            } else {
+                loadVaultItems();
+            }
+        });
+
+        function loadVaultItems() {
+            const q = query(collection(db, "services"), where("category", "==", category));
+            
+            onSnapshot(q, (snapshot) => {
+                const grid = document.getElementById('vault-grid');
+                document.getElementById('loader').style.display = 'none';
+                grid.innerHTML = "";
+
+                if(snapshot.empty) {
+                    grid.innerHTML = "<p style='text-align:center; width:100%; color:#444;'>No assets available in this category.</p>";
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const item = doc.data();
+                    grid.innerHTML += `
+                        <div class="item-card">
+                            <div class="img-box">
+                                <img src="itam-poto.png" alt="GrimShadow Asset">
+                            </div>
+                            <div class="details">
+                                <span class="author-box">DEV: ${item.author || 'GRIMSHADOW'}</span>
+                                <h3>${item.name}</h3>
+                                <p>${item.description}</p>
+                                
+                                <details>
+                                    <summary>INSTALLATION MANUAL</summary>
+                                    <p>${item.installManual || 'No instructions provided.'}</p>
+                                </details>
+
+                                <button class="download-btn" onclick="secureDownload('${item.fileId}', '${category}')">DOWNLOAD SECURELY</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        window.secureDownload = async (fileId, cat) => {
+            const inputKey = prompt(`🛡️ VERIFICATION REQUIRED: Enter ${cat} Master Key:`);
+            if (!inputKey) return;
+
+            try {
+                const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+                const userData = userDoc.data();
+                const masterKey = userData.keys[cat.toLowerCase()];
+
+                if (inputKey === masterKey) {
+                    alert("✅ ACCESS GRANTED: Fetching file from remote node...");
+                    const secureUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                    const dlFrame = document.createElement('iframe');
+                    dlFrame.style.display = 'none';
+                    dlFrame.src = secureUrl;
+                    document.body.appendChild(dlFrame);
+                    setTimeout(() => document.body.removeChild(dlFrame), 6000);
+                } else {
+                    alert("❌ ACCESS DENIED: Invalid Category Key. Verification failed.");
+                }
+            } catch (e) {
+                alert("Critical System Error: Key verification failed.");
+            }
+        };
+    </script>
+</body>
+</html>
