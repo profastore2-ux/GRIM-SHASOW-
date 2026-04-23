@@ -10,6 +10,7 @@
             --dark: #050505;
             --card-bg: rgba(14, 14, 14, 0.95);
             --text-sub: #bbbbbb;
+            --staff-purple: #7000ff;
         }
 
         body {
@@ -32,7 +33,7 @@
         .brand-text { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
         .brand-text span { color: var(--orange); text-shadow: 0 0 10px rgba(255, 159, 0, 0.5); }
 
-        .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; }
+        .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; align-items: center; }
         .nav-links a { text-decoration: none; color: #fff; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
         .nav-links a:hover { color: var(--orange); }
 
@@ -101,7 +102,7 @@
             <img src="image_13.png" alt="Logo" class="glow-logo">
             <div class="brand-text">GRIM<span>SHADOW</span></div>
         </div>
-        <ul class="nav-links">
+        <ul class="nav-links" id="dynamic-nav">
             <li><a href="#home">Home Base</a></li>
             <li><a href="#services">The Vault</a></li>
             <li><a href="#protocols">Protocols</a></li>
@@ -190,33 +191,52 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- ADMIN SECRET ACCESS (Alt + G) ---
-        document.addEventListener('keydown', (e) => {
+        // --- DUAL-LEVEL ADMIN ACCESS SYSTEM (Alt + G) ---
+        document.addEventListener('keydown', async (e) => {
             if (e.altKey && e.key.toLowerCase() === 'g') {
                 const user = auth.currentUser;
+                
                 if (user) {
-                    // ඔයාගේ ඇත්තම ඇඩ්මින් පේජ් නමට මෙතන ගැලපුවා
-                    window.location.href = 'grim-admin-portal.html';
+                    // 1. Super Admin Check
+                    if (user.email === "profastore2@gmail.com") {
+                        console.log("Master Access Verified.");
+                        window.location.href = 'grim-admin-portal.html';
+                        return;
+                    }
+
+                    // 2. Staff Admin Check
+                    const adminDoc = await getDoc(doc(db, "admins", user.email));
+                    if (adminDoc.exists()) {
+                        console.log("Staff Access Verified.");
+                        window.location.href = 'staff-panel.html';
+                    } else {
+                        alert("ACCESS DENIED: CLEARANCE LEVEL 0 REQUIRED.");
+                    }
                 } else {
-                    alert("SECURE ACCESS DENIED: PLEASE LOGIN TO OPERATIVE PORTAL FIRST.");
+                    alert("SECURE UPLINK FAILED: PLEASE LOGIN TO OPERATIVE PORTAL.");
                     window.location.href = 'access.html';
                 }
             }
         });
 
-        // --- LOGGED-IN ADMIN TRACKER (SMART LOGIC) ---
+        // --- NAVBAR SMART LINKS (Dynamic Display) ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const adminDoc = await getDoc(doc(db, "admins", user.email));
-                if (adminDoc.exists()) {
-                    const nav = document.querySelector('.nav-links');
-                    // මෙතනත් ලින්ක් එක නිවැරදි කළා
-                    nav.innerHTML += `<li><a href="grim-admin-portal.html" style="color:var(--orange)">[CORE]</a></li>`;
-                    console.log("Admin Uplink Verified.");
+                const nav = document.getElementById('dynamic-nav');
+                
+                if (user.email === "profastore2@gmail.com") {
+                    nav.innerHTML += `<li><a href="grim-admin-portal.html" style="color:var(--orange); border:1px solid var(--orange); padding:2px 8px; border-radius:4px;">[SUPER-CORE]</a></li>`;
+                } 
+                else {
+                    const adminDoc = await getDoc(doc(db, "admins", user.email));
+                    if (adminDoc.exists()) {
+                        nav.innerHTML += `<li><a href="staff-panel.html" style="color:var(--staff-purple); border:1px solid var(--staff-purple); padding:2px 8px; border-radius:4px;">[STAFF-HUB]</a></li>`;
+                    }
                 }
             }
         });
 
+        // Utility functions remain identical
         window.openModal = () => document.getElementById('contactModal').style.display = 'flex';
         window.closeModal = () => document.getElementById('contactModal').style.display = 'none';
 
@@ -233,11 +253,11 @@
             const name = document.getElementById('contactName').value;
             const email = document.getElementById('contactEmail').value;
             const message = document.getElementById('contactMessage').value;
-            if(!name || !email || !message) return alert("Validation Error: Please fill all required fields.");
+            if(!name || !email || !message) return alert("Validation Error.");
             await addDoc(collection(db, "inquiries"), { name, email, message, status: "pending", timestamp: serverTimestamp() });
             const teleMsg = `📨 *NEW INQUIRY*\nName: ${name}\nEmail: ${email}\nMessage: ${message}`;
             fetch(`https://api.telegram.org/bot8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ/sendMessage?chat_id=-1003946509160&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
-            alert("Transmission Successful. Admin will contact you soon.");
+            alert("Transmission Successful.");
             closeModal();
         };
     </script>
