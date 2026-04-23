@@ -41,7 +41,7 @@
         .hero h1 { font-size: 4rem; letter-spacing: 5px; margin: 0; text-transform: uppercase; font-weight: 900; }
         .hero h1 span { color: var(--orange); text-shadow: 0 0 20px var(--orange); }
 
-        /* STEP GUIDE (PHASE 01-04) */
+        /* STEP GUIDE */
         .guide-bar {
             background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(10px);
             display: flex; justify-content: center; gap: 40px; padding: 60px 40px; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
@@ -56,10 +56,7 @@
         .services h2 { font-size: 2rem; margin-bottom: 50px; letter-spacing: 3px; text-transform: uppercase; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
 
-        .card {
-            background: var(--card-bg); border: 1px solid #222; border-radius: 12px; transition: 0.4s; cursor: pointer;
-            overflow: hidden; position: relative; text-align: left;
-        }
+        .card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; transition: 0.4s; cursor: pointer; overflow: hidden; position: relative; text-align: left; }
         .card:hover { border-color: var(--orange); transform: translateY(-10px); box-shadow: 0 0 30px rgba(255, 159, 0, 0.2); }
         .card-img-container { width: 100%; height: 200px; background: #000; position: relative; overflow: hidden; }
         .card-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.3s; }
@@ -68,9 +65,8 @@
         .category-badge { position: absolute; top: 15px; left: 15px; background: var(--orange); color: #000; padding: 5px 12px; font-size: 0.7rem; font-weight: 900; border-radius: 4px; text-transform: uppercase; }
         .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; }
         .buy-btn { background: #fff; color: #000; border: none; padding: 8px 18px; font-weight: 900; border-radius: 4px; text-transform: uppercase; font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
-        .card:hover .buy-btn { background: var(--orange); }
 
-        /* PROTOCOL CENTER (TABS) */
+        /* PROTOCOLS */
         .protocol-section { padding: 100px 20px; background: rgba(5, 5, 5, 0.5); }
         .section-title { text-align: center; font-size: 2rem; letter-spacing: 5px; margin-bottom: 50px; text-transform: uppercase; }
         .section-title span { color: var(--orange); text-shadow: 0 0 15px var(--orange); }
@@ -84,13 +80,11 @@
         .text-side ul { list-style: none; padding: 0; }
         .text-side ul li { margin-bottom: 15px; border-left: 3px solid var(--orange); padding-left: 15px; font-size: 0.85rem; color: #aaa; }
 
-        /* CONTACT MODAL */
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #0a0a0a; padding: 40px; border-radius: 15px; border: 1px solid var(--orange); box-shadow: 0 0 50px rgba(255, 159, 0, 0.2); width: 90%; max-width: 450px; position: relative; }
-        .modal-content h2 { border-left: 4px solid var(--orange); padding-left: 15px; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.2rem; }
         input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 8px; box-sizing: border-box; outline: none; }
-        input:focus, textarea:focus { border-color: var(--orange); }
-        .orange-btn { background: var(--orange); color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
+        .orange-btn { background: var(--orange); color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; text-transform: uppercase; }
 
         @media (max-width: 900px) {
             .navbar { padding: 15px 20px; }
@@ -174,13 +168,14 @@
         </div>
     </div>
 
-    <footer style="text-align: center; padding: 40px; color: #444; border-top: 1px solid #1a1a1a; font-size: 0.8rem; background: #000;">
+    <footer style="text-align: center; padding: 40px; color: #222; border-top: 1px solid #1a1a1a; font-size: 0.8rem; background: #000; cursor: default;">
         &copy; 2026 GRIMSHADOW ENTERPRISE | SECURING THE VOID.
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
@@ -193,6 +188,32 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- ADMIN SECRET ACCESS (Alt + G) ---
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key.toLowerCase() === 'g') {
+                const user = auth.currentUser;
+                if (user) {
+                    window.location.href = 'grim-admin.html';
+                } else {
+                    alert("SECURE ACCESS DENIED: PLEASE LOGIN TO OPERATIVE PORTAL FIRST.");
+                    window.location.href = 'access.html';
+                }
+            }
+        });
+
+        // --- LOGGED-IN ADMIN TRACKER (SMART LOGIC) ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const adminDoc = await getDoc(doc(db, "admins", user.email));
+                if (adminDoc.exists()) {
+                    const nav = document.querySelector('.nav-links');
+                    nav.innerHTML += `<li><a href="grim-admin.html" style="color:var(--orange)">[CORE]</a></li>`;
+                    console.log("Admin Uplink Verified.");
+                }
+            }
+        });
 
         window.openModal = () => document.getElementById('contactModal').style.display = 'flex';
         window.closeModal = () => document.getElementById('contactModal').style.display = 'none';
@@ -210,19 +231,10 @@
             const name = document.getElementById('contactName').value;
             const email = document.getElementById('contactEmail').value;
             const message = document.getElementById('contactMessage').value;
-
             if(!name || !email || !message) return alert("Validation Error: Please fill all required fields.");
-
-            await addDoc(collection(db, "inquiries"), {
-                name, email, message,
-                status: "pending",
-                timestamp: serverTimestamp()
-            });
-
-            // Telegram Notification
+            await addDoc(collection(db, "inquiries"), { name, email, message, status: "pending", timestamp: serverTimestamp() });
             const teleMsg = `📨 *NEW INQUIRY*\nName: ${name}\nEmail: ${email}\nMessage: ${message}`;
             fetch(`https://api.telegram.org/bot8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ/sendMessage?chat_id=-1003946509160&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
-
             alert("Transmission Successful. Admin will contact you soon.");
             closeModal();
         };
