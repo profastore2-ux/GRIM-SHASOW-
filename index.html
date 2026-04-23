@@ -8,21 +8,21 @@
         :root {
             --orange: #FF9F00; 
             --dark: #050505;
-            --card-bg: rgba(14, 14, 14, 0.7);
+            --card-bg: rgba(14, 14, 14, 0.95);
             --text-sub: #bbbbbb;
         }
 
         body {
             margin: 0; padding: 0; background-color: var(--dark);
             color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden;
-            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('image_16.png'); 
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('image_16.png'); 
             background-size: cover; background-position: center; background-attachment: fixed;
         }
 
         /* NAVBAR */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 80px; background: rgba(0, 0, 0, 0.9);
+            padding: 15px 80px; background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000;
             border-bottom: 1px solid rgba(255, 159, 0, 0.2); box-sizing: border-box;
         }
@@ -32,8 +32,8 @@
         .nav-links a:hover { color: var(--orange); }
 
         /* HERO */
-        .hero { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
-        .hero h1 { font-size: 5rem; letter-spacing: 10px; margin: 0; text-transform: uppercase; font-weight: 900; }
+        .hero { height: 75vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; }
+        .hero h1 { font-size: 4rem; letter-spacing: 5px; margin: 0; text-transform: uppercase; font-weight: 900; }
         .hero h1 span { color: var(--orange); text-shadow: 0 0 20px var(--orange); }
 
         /* GUIDE */
@@ -46,25 +46,46 @@
         .guide-item h3 { color: #fff; margin: 10px 0; font-size: 1rem; text-transform: uppercase; }
 
         /* SERVICES GRID */
-        .services { padding: 100px 40px; max-width: 1300px; margin: 0 auto; }
+        .services { padding: 80px 40px; max-width: 1300px; margin: 0 auto; text-align: center; }
+        .services h2 { font-size: 2rem; margin-bottom: 50px; letter-spacing: 3px; text-transform: uppercase; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-        .card {
-            background: var(--card-bg); border: 1px solid #222; padding: 40px; border-radius: 8px; transition: 0.4s; cursor: pointer;
-            backdrop-filter: blur(10px); position: relative; overflow: hidden;
-        }
-        .card:hover { border-color: var(--orange); transform: translateY(-10px); background: rgba(14, 14, 14, 0.85); box-shadow: 0 0 30px rgba(255, 159, 0, 0.2); }
-        .card h3 { color: var(--orange); margin: 0 0 15px 0; font-size: 1.2rem; }
-        .card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
 
-        /* MODAL (FOR CONTACT FORM) */
+        .card {
+            background: var(--card-bg); border: 1px solid #222; border-radius: 12px; transition: 0.4s; cursor: pointer;
+            overflow: hidden; position: relative; text-align: left;
+        }
+        .card:hover { border-color: var(--orange); transform: translateY(-10px); box-shadow: 0 0 30px rgba(255, 159, 0, 0.2); }
+
+        .card-img-container { width: 100%; height: 200px; background: #000; position: relative; overflow: hidden; }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.3s; }
+        .card:hover .card-img-container img { opacity: 1; transform: scale(1.05); }
+
+        .category-badge {
+            position: absolute; top: 15px; left: 15px; background: var(--orange); color: #000;
+            padding: 5px 12px; font-size: 0.7rem; font-weight: 900; border-radius: 4px; text-transform: uppercase;
+        }
+
+        .card-body { padding: 25px; }
+        .card-body h3 { color: #fff; margin: 0 0 10px 0; font-size: 1.2rem; text-transform: uppercase; }
+        .card-body p { color: #ccc; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px; }
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; }
+        .author { font-size: 0.7rem; color: var(--orange); font-weight: bold; }
+
+        .buy-btn {
+            background: #fff; color: #000; border: none; padding: 8px 18px; font-weight: 900;
+            border-radius: 4px; text-transform: uppercase; font-size: 0.75rem; cursor: pointer; transition: 0.3s;
+        }
+        .card:hover .buy-btn { background: var(--orange); }
+
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #111; padding: 40px; border-radius: 10px; border: 1px solid var(--orange); width: 90%; max-width: 500px; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #333; color: #fff; border-radius: 5px; box-sizing: border-box; }
-        .orange-btn { background: var(--orange); color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; text-transform: uppercase; }
 
-        @media (max-width: 900px) {
-            .navbar { padding: 15px 20px; flex-direction: column; gap: 15px; }
+        @media (max-width: 1000px) {
+            .navbar { padding: 15px 20px; }
             .grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -74,14 +95,14 @@
         <div class="nav-logo"><img src="image_13.png" alt="GrimShadow"></div>
         <ul class="nav-links">
             <li><a href="#home">Home</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#stories">Stories</a></li>
+            <li><a href="#services">Vaults</a></li>
+            <li><a href="#" onclick="openModal()">Contact</a></li>
         </ul>
         <button style="background:var(--orange); border:none; padding:10px 25px; font-weight:900; cursor:pointer; border-radius: 5px; text-transform: uppercase;" onclick="location.href='access.html'">Access Portal</button>
     </nav>
 
     <header class="hero" id="home">
-        <img src="image_13.png" style="height: 180px; margin-bottom: 30px; filter: drop-shadow(0 0 15px var(--orange));">
+        <img src="image_13.png" style="height: 150px; margin-bottom: 30px; filter: drop-shadow(0 0 15px var(--orange));">
         <h1>WELCOME TO <span>GRIMSHADOW</span></h1>
         <p style="color:#fff; font-size: 1.1rem; max-width: 700px; font-weight: bold; text-shadow: 2px 2px 4px #000;">The industry-leading repository for secure kernel optimization and advanced system tools.</p>
     </header>
@@ -94,8 +115,52 @@
     </div>
 
     <section class="services" id="services">
-        <div class="grid" id="services-grid">
-            <p>Loading Dynamic Repository...</p>
+        <h2>SECURE REPOSITORIES</h2>
+        <div class="grid">
+            <div class="card" onclick="location.href='vault.html?cat=SCR'">
+                <div class="card-img-container">
+                    <span class="category-badge">CAT 01</span>
+                    <img src="itam-poto.png" alt="SCR">
+                </div>
+                <div class="card-body">
+                    <h3>SCRIPTS & MODS (SCR)</h3>
+                    <p>Advanced kernel scripts, performance mods, and optimization tools.</p>
+                    <div class="card-footer">
+                        <span class="author">ACCESS: MASTER KEY REQ.</span>
+                        <button class="buy-btn">OPEN VAULT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="location.href='vault.html?cat=MEM'">
+                <div class="card-img-container">
+                    <span class="category-badge">CAT 02</span>
+                    <img src="itam-poto.png" alt="MEM">
+                </div>
+                <div class="card-body">
+                    <h3>MEMORY HUB (MEM)</h3>
+                    <p>Dedicated memory management and secure buffer overflow protections.</p>
+                    <div class="card-footer">
+                        <span class="author">ACCESS: MASTER KEY REQ.</span>
+                        <button class="buy-btn">OPEN VAULT</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="location.href='vault.html?cat=SYS'">
+                <div class="card-img-container">
+                    <span class="category-badge">CAT 03</span>
+                    <img src="itam-poto.png" alt="SYS">
+                </div>
+                <div class="card-body">
+                    <h3>SYSTEM PURGE (SYS)</h3>
+                    <p>Full system bypass tools and deep kernel cleaning utilities.</p>
+                    <div class="card-footer">
+                        <span class="author">ACCESS: MASTER KEY REQ.</span>
+                        <button class="buy-btn">OPEN VAULT</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -116,7 +181,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
@@ -130,33 +195,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 1. LOAD SERVICES DYNAMICALLY
-        onSnapshot(collection(db, "services"), (snapshot) => {
-            const grid = document.getElementById('services-grid');
-            grid.innerHTML = "";
-            snapshot.forEach(doc => {
-                const item = doc.data();
-                grid.innerHTML += `
-                    <div class="card" onclick="location.href='access.html'">
-                        <h3>${item.name}</h3>
-                        <p>${item.description}</p>
-                    </div>
-                `;
-            });
-            // Manual Add: Direct Contact Card
-            grid.innerHTML += `
-                <div class="card" onclick="openModal()">
-                    <h3>DIRECT CONTACT</h3>
-                    <p>Send secure, encrypted messages directly to our core team. Response < 12h.</p>
-                </div>
-            `;
-        });
-
-        // 2. MODAL LOGIC
         window.openModal = () => document.getElementById('contactModal').style.display = 'flex';
         window.closeModal = () => document.getElementById('contactModal').style.display = 'none';
 
-        // 3. SUBMIT INQUIRY TO FIREBASE
         window.submitInquiry = async () => {
             const name = document.getElementById('contactName').value;
             const email = document.getElementById('contactEmail').value;
