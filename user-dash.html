@@ -8,14 +8,17 @@
         :root { --orange: #FF9F00; --dark: #050505; --card: #111; --red: #ff4444; }
         body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; overflow-x: hidden; }
         
+        /* ANNOUNCEMENT BAR */
+        #alert-bar { display: none; background: var(--red); color: #fff; padding: 12px; text-align: center; font-weight: 900; font-size: 0.8rem; letter-spacing: 2px; position: fixed; top: 0; width: 100%; z-index: 999; text-transform: uppercase; box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3); }
+
         /* Sidebar Navigation */
-        .sidebar { width: 250px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; z-index: 100; }
+        .sidebar { width: 250px; height: 100vh; background: #000; border-right: 1px solid #222; position: fixed; padding: 20px; box-sizing: border-box; z-index: 100; margin-top: 40px; }
         .sidebar h2 { color: var(--orange); font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 40px; border-bottom: 2px solid var(--orange); padding-bottom: 10px; text-transform: uppercase; }
         .nav-item { padding: 15px; color: #888; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px; font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; }
         .nav-item:hover, .nav-item.active { background: rgba(255, 159, 0, 0.1); color: var(--orange); }
 
         /* Main Area */
-        .main { margin-left: 250px; width: calc(100% - 250px); padding: 40px; box-sizing: border-box; }
+        .main { margin-left: 250px; width: calc(100% - 250px); padding: 80px 40px 40px 40px; box-sizing: border-box; }
         .section { display: none; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -28,9 +31,14 @@
         .pending { background: rgba(255, 159, 0, 0.1); border-color: var(--orange); color: var(--orange); }
         .active-status { background: rgba(0, 255, 102, 0.1); border-color: #00ff66; color: #00ff66; }
 
+        /* Download Section */
+        .dl-card { background: #000; border: 1px solid #222; padding: 20px; border-radius: 10px; margin-top: 15px; border-left: 4px solid var(--orange); }
+        .loading-bar-container { width: 100%; height: 4px; background: #111; border-radius: 2px; overflow: hidden; margin-top: 15px; display: none; }
+        .loading-bar { width: 0%; height: 100%; background: var(--orange); transition: 2.5s linear; }
+
         /* Key Boxes */
         .key-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-        .key-box { background: #000; border: 1px solid #222; padding: 20px; border-radius: 8px; text-align: center; position: relative; }
+        .key-box { background: #000; border: 1px solid #222; padding: 20px; border-radius: 8px; text-align: center; }
         .key-label { font-size: 0.7rem; color: var(--orange); text-transform: uppercase; margin-bottom: 10px; display: block; font-weight: 900; }
         .key-val { font-family: 'Courier New', monospace; font-size: 0.9rem; color: #fff; word-break: break-all; background: #0a0a0a; padding: 10px; border-radius: 4px; }
 
@@ -38,9 +46,6 @@
         .orange-btn { background: var(--orange); color: #000; border: none; padding: 14px 25px; font-weight: 900; cursor: pointer; border-radius: 5px; width: 100%; text-transform: uppercase; transition: 0.3s; letter-spacing: 1px; }
         .orange-btn:hover { box-shadow: 0 0 20px var(--orange); transform: translateY(-2px); }
         
-        .vault-btn { background: #fff; color: #000; margin-top: 20px; }
-        .vault-btn:hover { background: var(--orange); }
-
         textarea { width: 100%; padding: 15px; background: #000; border: 1px solid #222; color: #fff; border-radius: 5px; margin-bottom: 15px; resize: none; font-family: inherit; }
 
         /* Chat System */
@@ -54,6 +59,8 @@
 </head>
 <body>
 
+    <div id="alert-bar"></div>
+
     <div class="sidebar">
         <h2>GRIMSHADOW</h2>
         <div class="nav-item active" onclick="showSection('dash')">DASHBOARD</div>
@@ -65,13 +72,18 @@
     <div class="main">
         <div id="dash" class="section active">
             <h1>OPERATIVE: <span id="user-display-name" style="color:var(--orange)">...</span></h1>
-            <span class="user-info">ENCRYPTED IP: <span id="user-ip" style="color:#666">FETCHING...</span></span>
+            <span class="user-info">TERMINAL IP: <span id="user-ip" style="color:#666">FETCHING...</span></span>
             
             <div id="status-container"></div>
 
+            <div id="download-section" class="card" style="display: none; border-color: var(--orange);">
+                <h3>📥 SECURE PACKAGE DISPATCHED</h3>
+                <p style="color: #666; font-size: 0.8rem; margin-bottom: 15px;">Protocol: Asset will self-destruct from dashboard immediately after decryption.</p>
+                <div id="pending-list"></div>
+            </div>
+
             <div id="keys-card" class="card" style="display: none;">
-                <h3>🛡️ ENCRYPTED MASTER KEYS</h3>
-                <p style="color: #666; font-size: 0.8rem; margin-bottom: 20px;">Use these keys to unlock downloads in the specific category vaults.</p>
+                <h3>🛡️ MASTER ACCESS KEYS</h3>
                 <div class="key-grid">
                     <div class="key-box">
                         <span class="key-label">Scripts Vault (SCR)</span>
@@ -86,12 +98,11 @@
                         <div class="key-val" id="key-sys">LOCKED</div>
                     </div>
                 </div>
-                <button class="orange-btn vault-btn" onclick="location.href='index.html#services'">GO TO SECURE REPOSITORY</button>
+                <button class="orange-btn" style="background:#fff; margin-top:20px;" onclick="location.href='index.html#services'">GO TO REPOSITORY</button>
             </div>
 
             <div id="request-card" class="card" style="display: none;">
                 <h3>ACCESS RESTRICTED</h3>
-                <p style="color: #666; font-size: 0.9rem;">Your clearance level is insufficient. Initialize verification to receive your category keys.</p>
                 <button class="orange-btn" onclick="sendGrimRequest()">INITIALIZE VERIFICATION</button>
             </div>
         </div>
@@ -101,7 +112,7 @@
             <div class="card">
                 <div id="chat-box"></div>
                 <div style="display: flex; gap: 10px;">
-                    <textarea id="msg-input" placeholder="Message to Admin..." rows="2"></textarea>
+                    <textarea id="msg-input" placeholder="Secure message..." rows="2"></textarea>
                     <button class="orange-btn" onclick="sendMessage()" style="width: 120px; height: 55px; margin: 0;">SEND</button>
                 </div>
             </div>
@@ -110,7 +121,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, updateDoc, addDoc, collection, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, addDoc, collection, query, where, orderBy, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -131,95 +142,131 @@
             if (user) {
                 userUID = user.uid;
                 document.getElementById('user-display-name').innerText = user.email.split('@')[0].toUpperCase();
-                
-                // Fetch IP for UI
-                fetch('https://api.ipify.org?format=json')
-                    .then(r => r.json())
-                    .then(data => document.getElementById('user-ip').innerText = data.ip);
+                fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => document.getElementById('user-ip').innerText = data.ip);
 
                 syncDashboard(user.uid);
                 listenToMessages();
+                listenToDownloads(user.uid);
+                listenToAlerts();
             } else {
                 window.location.href = 'access.html';
             }
         });
 
-        window.showSection = (id) => {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(event) event.target.classList.add('active');
+        // 1. ANNOUNCEMENT SYSTEM
+        function listenToAlerts() {
+            onSnapshot(doc(db, "settings", "global_alert"), (d) => {
+                const bar = document.getElementById('alert-bar');
+                if (d.exists() && d.data().active) {
+                    bar.innerText = `⚠️ SYSTEM ALERT: ${d.data().message}`;
+                    bar.style.display = "block";
+                } else {
+                    bar.style.display = "none";
+                }
+            });
+        }
+
+        // 2. SELF-DESTRUCT DOWNLOAD LOGIC
+        function listenToDownloads(uid) {
+            const q = query(collection(db, "user_downloads"), where("uid", "==", uid));
+            onSnapshot(q, (snapshot) => {
+                const section = document.getElementById('download-section');
+                const list = document.getElementById('pending-list');
+                if (snapshot.empty) { section.style.display = "none"; return; }
+
+                section.style.display = "block";
+                list.innerHTML = "";
+                snapshot.forEach(d => {
+                    const data = d.data();
+                    list.innerHTML += `
+                        <div class="dl-card" id="dl-box-${d.id}">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span><strong>ASSET:</strong> ${data.name}</span>
+                                <button class="orange-btn" style="width:180px; margin:0;" onclick="startSecureDL('${d.id}', '${data.fileId}')">DECRYPT & DOWNLOAD</button>
+                            </div>
+                            <div class="loading-bar-container" id="loader-${d.id}">
+                                <div class="loading-bar"></div>
+                                <p style="font-size:10px; color:var(--orange); margin-top:8px; text-transform:uppercase;">Decrypting Data Stream...</p>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        window.startSecureDL = async (docId, fileId) => {
+            const box = document.getElementById(`dl-box-${docId}`);
+            const btn = box.querySelector('button');
+            const loader = document.getElementById(`loader-${docId}`);
+            const bar = loader.querySelector('.loading-bar');
+
+            btn.style.display = "none";
+            loader.style.display = "block";
+            setTimeout(() => bar.style.width = "100%", 100);
+
+            setTimeout(async () => {
+                const secureUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                const dlFrame = document.createElement('iframe');
+                dlFrame.style.display = 'none';
+                dlFrame.src = secureUrl;
+                document.body.appendChild(dlFrame);
+
+                await deleteDoc(doc(db, "user_downloads", docId));
+                alert("🛡️ PROTOCOL: Asset purged from dashboard after successful decryption.");
+                setTimeout(() => document.body.removeChild(dlFrame), 5000);
+            }, 2600);
         };
 
+        // 3. DASHBOARD SYNC
         function syncDashboard(uid) {
             onSnapshot(doc(db, "users", uid), (d) => {
                 const data = d.data();
                 if(!data) return;
-
                 const statusDiv = document.getElementById('status-container');
                 const keysCard = document.getElementById('keys-card');
                 const requestCard = document.getElementById('request-card');
 
                 if (data.accountStatus === "pending_approval") {
-                    statusDiv.innerHTML = `<div class="status-msg pending">⏳ CLEARANCE PENDING: System admins are verifying your operative profile.</div>`;
-                    requestCard.style.display = "none";
-                    keysCard.style.display = "block";
-                } 
-                else if (data.accountStatus === "active") {
-                    statusDiv.innerHTML = `<div class="status-msg active-status">✅ ACCESS GRANTED: Your encrypted terminal is fully functional.</div>`;
-                    requestCard.style.display = "none";
-                    keysCard.style.display = "block";
-                    
+                    statusDiv.innerHTML = `<div class="status-msg pending">⏳ CLEARANCE PENDING: Verifying profile...</div>`;
+                    requestCard.style.display = "none"; keysCard.style.display = "block";
+                } else if (data.accountStatus === "active") {
+                    statusDiv.innerHTML = `<div class="status-msg active-status">✅ SYSTEM ACTIVE: Terminal Encrypted.</div>`;
+                    requestCard.style.display = "none"; keysCard.style.display = "block";
                     document.getElementById('key-scr').innerText = data.keys.scr || "LOCKED";
                     document.getElementById('key-mem').innerText = data.keys.mem || "LOCKED";
                     document.getElementById('key-sys').innerText = data.keys.sys || "LOCKED";
-                }
-                else {
-                    requestCard.style.display = "block";
-                    keysCard.style.display = "none";
+                } else {
+                    requestCard.style.display = "block"; keysCard.style.display = "none";
                 }
             });
         }
 
+        window.showSection = (id) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        };
+
         window.sendGrimRequest = async () => {
-            if(!confirm("Initialize verification request?")) return;
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                
-                await updateDoc(doc(db, "users", userUID), { 
-                    accountStatus: "pending_approval",
-                    lastIP: ipData.ip 
-                });
-
-                const teleMsg = `🚨 *NEW ACCESS REQUEST*\nUser: ${auth.currentUser.email}\nIP: ${ipData.ip}\nAction Required: Verify on Admin Panel.`;
-                await fetch(`https://api.telegram.org/bot8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ/sendMessage?chat_id=-1003946509160&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
-
-                alert("Request transmitted. Encryption keys will be assigned soon.");
-            } catch (e) { alert("Transmission error."); }
+            if(!confirm("Initialize verification?")) return;
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            await updateDoc(doc(db, "users", userUID), { accountStatus: "pending_approval", lastIP: ipData.ip });
+            fetch(`https://api.telegram.org/bot8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ/sendMessage?chat_id=-1003946509160&text=${encodeURIComponent("🚨 *NEW REQUEST*\nUser: "+auth.currentUser.email+"\nIP: "+ipData.ip)}&parse_mode=Markdown`);
+            alert("Admin notified.");
         };
 
         window.sendMessage = async () => {
             const text = document.getElementById('msg-input').value;
             if(!text || !userUID) return;
-            await addDoc(collection(db, "chats"), { 
-                uid: userUID, 
-                text: text, 
-                sender: "user", 
-                timestamp: serverTimestamp() 
-            });
+            await addDoc(collection(db, "chats"), { uid: userUID, text: text, sender: "user", timestamp: serverTimestamp() });
             document.getElementById('msg-input').value = "";
         };
 
         function listenToMessages() {
             const q = query(collection(db, "chats"), where("uid", "==", userUID), orderBy("timestamp", "asc"));
             onSnapshot(q, (snapshot) => {
-                const box = document.getElementById('chat-box');
-                box.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    box.innerHTML += `<div class="msg ${d.sender}">${d.text}</div>`;
-                });
+                const box = document.getElementById('chat-box'); box.innerHTML = "";
+                snapshot.forEach(doc => { box.innerHTML += `<div class="msg ${doc.data().sender}">${doc.data().text}</div>`; });
                 box.scrollTop = box.scrollHeight;
             });
         }
