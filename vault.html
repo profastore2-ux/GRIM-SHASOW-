@@ -55,7 +55,7 @@
         .container { max-width: 1400px; margin: 0 auto; padding: 20px 40px; }
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
             gap: 25px; 
         }
 
@@ -75,25 +75,26 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .img-box { width: 100%; height: 200px; background: #000; overflow: hidden; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.3s; }
+        .img-box { width: 100%; height: 180px; background: #000; overflow: hidden; border-bottom: 1px solid #222; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.3s; }
         .item-card:hover .img-box img { opacity: 1; transform: scale(1.05); }
 
         .details { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
         .details h3 { margin: 0 0 10px 0; font-size: 1.1rem; text-transform: uppercase; color: #fff; letter-spacing: 1px; }
         .details p { color: #888; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px; flex-grow: 1; }
         
-        .author-box { font-size: 0.75rem; color: var(--orange); margin-bottom: 12px; display: block; font-weight: bold; text-transform: uppercase; }
+        .author-box { font-size: 0.7rem; color: var(--orange); margin-bottom: 12px; display: block; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
 
-        details { background: #000; padding: 12px; border-radius: 6px; margin-bottom: 20px; cursor: pointer; border: 1px solid #1a1a1a; }
+        details { background: #000; padding: 12px; border-radius: 6px; margin-bottom: 20px; cursor: pointer; border: 1px solid #1a1a1a; transition: 0.3s; }
+        details:hover { border-color: #333; }
         summary { font-size: 0.8rem; color: #aaa; font-weight: bold; text-transform: uppercase; }
-        details p { font-size: 0.8rem !important; color: #bbb !important; margin-top: 10px; border-top: 1px solid #111; padding-top: 10px; }
+        details p { font-size: 0.8rem !important; color: #bbb !important; margin-top: 10px; border-top: 1px solid #111; padding-top: 10px; line-height: 1.5; }
 
         .download-btn {
             background: #fff; color: #000; border: none;
             padding: 14px; width: 100%; font-weight: 900;
             text-transform: uppercase; cursor: pointer; transition: 0.3s;
-            font-size: 0.85rem; border-radius: 4px;
+            font-size: 0.85rem; border-radius: 4px; letter-spacing: 1px;
         }
         .download-btn:hover { background: var(--orange); transform: scale(1.02); }
 
@@ -112,14 +113,14 @@
 
     <nav class="navbar">
         <div class="nav-logo" onclick="location.href='index.html'"><img src="image_13.png" alt="GrimShadow"></div>
-        <div style="color: var(--orange); font-weight: 900; font-size: 0.8rem; letter-spacing: 2px;" id="vault-title">LOADING...</div>
-        <button style="background:none; border:1px solid #333; color:#fff; padding:8px 15px; cursor:pointer; font-size: 0.7rem; border-radius: 4px;" onclick="location.href='user-dash.html'">TERMINAL</button>
+        <div style="color: var(--orange); font-weight: 900; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;" id="vault-title">LOADING REPOSITORY...</div>
+        <button style="background:none; border:1px solid #333; color:#fff; padding:8px 15px; cursor:pointer; font-size: 0.7rem; border-radius: 4px; text-transform: uppercase; font-weight: bold;" onclick="location.href='user-dash.html'">ACCESS TERMINAL</button>
     </nav>
 
     <div class="vault-header">
         <h1 id="main-title">SECURE <span>VAULT</span></h1>
         <div class="search-container">
-            <input type="text" id="vault-search" placeholder="SEARCH ASSETS..." onkeyup="searchVault()">
+            <input type="text" id="vault-search" placeholder="SEARCH ENCRYPTED ASSETS..." onkeyup="searchVault()">
         </div>
     </div>
 
@@ -146,11 +147,12 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // හෝම් පේජ් එකෙන් එවන කැටගරි එක මෙතනින් අල්ලගන්නවා
         const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('cat') || 'SCR';
+        const category = urlParams.get('cat') || 'SCR'; 
         let attemptCount = 0;
 
-        document.getElementById('vault-title').innerText = `${category} CATEGORY`;
+        document.getElementById('vault-title').innerText = `${category} CATEGORY ACCESS`;
         document.getElementById('main-title').innerHTML = `${category} <span>VAULT</span>`;
 
         onAuthStateChanged(auth, async (user) => {
@@ -163,7 +165,7 @@
             }
         });
 
-        // 1. ANNOUNCEMENT SYSTEM
+        // 1. ANNOUNCEMENT SYSTEM (ලයිව් ඇලර්ට්)
         function listenToAlerts() {
             onSnapshot(doc(db, "settings", "global_alert"), (d) => {
                 const bar = document.getElementById('alert-bar');
@@ -176,25 +178,19 @@
             });
         }
 
-        // 2. MULTI-DEVICE / IP CHECK
+        // 2. SECURITY CHECK (BAN පරීක්ෂාව)
         async function checkSecurity(user) {
-            const ipRes = await fetch('https://api.ipify.org?format=json');
-            const ipData = await ipRes.json();
-            
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
                 const data = userSnap.data();
-                if (data.accountStatus === 'banned') {
-                    alert("CRITICAL ERROR: ACCESS PERMANENTLY REVOKED.");
+                if (userData && data.accountStatus === 'banned') {
+                    alert("CRITICAL SECURITY ALERT: ACCESS PERMANENTLY REVOKED.");
                     signOut(auth).then(() => window.location.href = 'access.html');
-                }
-                if (data.lastIP && data.lastIP !== ipData.ip) {
-                    console.log("Security Note: Accessed from new network node.");
                 }
             }
         }
 
-        // 3. SEARCH LOGIC
+        // 3. SEARCH LOGIC (ක්ෂණික සෙවීම්)
         window.searchVault = () => {
             const term = document.getElementById('vault-search').value.toLowerCase();
             const cards = document.querySelectorAll('.item-card');
@@ -204,23 +200,34 @@
             });
         };
 
-        // 4. LOAD ITEMS
+        // 4. LOAD ITEMS (කැටගරි එකට අදාළ බඩු විතරක් ලෝඩ් කිරීම)
         function loadVaultItems() {
             const q = query(collection(db, "services"), where("category", "==", category));
             onSnapshot(q, (snapshot) => {
                 const grid = document.getElementById('vault-grid');
-                document.getElementById('loader').style.display = 'none';
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.display = 'none';
+                
                 grid.innerHTML = "";
+                
+                if(snapshot.empty) {
+                    grid.innerHTML = `<p style="text-align:center; width:100%; color:#555; padding:40px;">No encrypted assets found in the ${category} category.</p>`;
+                    return;
+                }
+
                 snapshot.forEach(doc => {
                     const item = doc.data();
                     grid.innerHTML += `
                         <div class="item-card">
-                            <div class="img-box"><img src="itam-poto.png"></div>
+                            <div class="img-box"><img src="itam-poto.png" alt="GrimShadow Asset"></div>
                             <div class="details">
-                                <span class="author-box">DEV: ${item.author || 'GRIMSHADOW'}</span>
+                                <span class="author-box">DEVELOPER: ${item.author || 'GRIMSHADOW'}</span>
                                 <h3>${item.name}</h3>
                                 <p>${item.description}</p>
-                                <details><summary>INSTALLATION MANUAL</summary><p>${item.installManual || 'No instructions.'}</p></details>
+                                <details>
+                                    <summary>INSTALLATION MANUAL</summary>
+                                    <p>${item.installManual || 'No instructions provided.'}</p>
+                                </details>
                                 <button class="download-btn" onclick="secureDownload('${item.fileId}', '${category}')">DOWNLOAD SECURELY</button>
                             </div>
                         </div>`;
@@ -228,9 +235,9 @@
             });
         }
 
-        // 5. SECURE DOWNLOAD & AUTO-BAN LOGIC
+        // 5. SECURE DOWNLOAD & AUTO-BAN (ආරක්ෂිත බාගත කිරීම්)
         window.secureDownload = async (fileId, cat) => {
-            const inputKey = prompt(`🛡️ [SECURITY] ENTER ${cat} MASTER KEY:`);
+            const inputKey = prompt(`🛡️ [SECURITY PROTOCOL] ENTER ${cat} MASTER KEY:`);
             if (!inputKey) return;
 
             const userRef = doc(db, "users", auth.currentUser.uid);
@@ -240,7 +247,8 @@
 
             if (inputKey === masterKey) {
                 attemptCount = 0;
-                alert("✅ ACCESS GRANTED: INITIALIZING SECURE FETCH...");
+                alert("✅ ACCESS GRANTED: DECRYPTING & FETCHING DATA...");
+                
                 const secureUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
                 const dlFrame = document.createElement('iframe');
                 dlFrame.style.display = 'none';
@@ -251,7 +259,7 @@
                 attemptCount++;
                 if (attemptCount >= 3) {
                     await updateDoc(userRef, { accountStatus: 'banned' });
-                    alert("❌ SECURITY BREACH: UNAUTHORIZED ATTEMPTS DETECTED. TERMINAL LOCKED.");
+                    alert("❌ SECURITY BREACH: UNAUTHORIZED ATTEMPTS DETECTED. TERMINAL PERMANENTLY LOCKED.");
                     signOut(auth).then(() => window.location.reload());
                 } else {
                     alert(`❌ ACCESS DENIED: INVALID KEY. ATTEMPT ${attemptCount}/3 BEFORE LOCKOUT.`);
