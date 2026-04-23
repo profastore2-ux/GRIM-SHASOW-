@@ -21,25 +21,19 @@
         }
 
         /* ANNOUNCEMENT BAR */
-        #alert-bar {
-            display: none; background: var(--red); color: #fff;
-            padding: 12px; text-align: center; font-weight: 900;
-            font-size: 0.8rem; letter-spacing: 2px; position: fixed;
-            top: 70px; width: 100%; z-index: 999; text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
-        }
+        #alert-bar { display: none; background: var(--red); color: #fff; padding: 12px; text-align: center; font-weight: 900; font-size: 0.8rem; letter-spacing: 2px; position: fixed; top: 0; width: 100%; z-index: 1000; text-transform: uppercase; box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3); }
 
         /* NAVBAR */
         .navbar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 80px; background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000;
+            backdrop-filter: blur(10px); position: fixed; top: 40px; width: 100%; z-index: 999;
             border-bottom: 1px solid rgba(255, 159, 0, 0.2); box-sizing: border-box;
         }
         .nav-logo img { height: 40px; cursor: pointer; }
 
         /* VAULT HEADER & SEARCH */
-        .vault-header { padding: 140px 40px 20px 40px; text-align: center; }
+        .vault-header { padding: 180px 40px 20px 40px; text-align: center; }
         .vault-header h1 { font-size: 3rem; text-transform: uppercase; letter-spacing: 5px; margin: 0; }
         .vault-header span { color: var(--orange); }
 
@@ -53,27 +47,11 @@
 
         /* STORE GRID */
         .container { max-width: 1400px; margin: 0 auto; padding: 20px 40px; }
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 25px; 
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
 
         /* ITEM CARD */
-        .item-card {
-            background: var(--card-bg);
-            border: 1px solid #222;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-        }
-        .item-card:hover {
-            border-color: var(--orange);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .item-card { background: var(--card-bg); border: 1px solid #222; border-radius: 8px; overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; }
+        .item-card:hover { border-color: var(--orange); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         .img-box { width: 100%; height: 180px; background: #000; overflow: hidden; border-bottom: 1px solid #222; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.3s; }
@@ -86,7 +64,6 @@
         .author-box { font-size: 0.7rem; color: var(--orange); margin-bottom: 12px; display: block; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
 
         details { background: #000; padding: 12px; border-radius: 6px; margin-bottom: 20px; cursor: pointer; border: 1px solid #1a1a1a; transition: 0.3s; }
-        details:hover { border-color: #333; }
         summary { font-size: 0.8rem; color: #aaa; font-weight: bold; text-transform: uppercase; }
         details p { font-size: 0.8rem !important; color: #bbb !important; margin-top: 10px; border-top: 1px solid #111; padding-top: 10px; line-height: 1.5; }
 
@@ -100,11 +77,7 @@
 
         #loader { text-align: center; padding: 100px; font-weight: bold; color: var(--orange); letter-spacing: 2px; }
 
-        @media (max-width: 800px) {
-            .navbar { padding: 15px 20px; }
-            .grid { grid-template-columns: 1fr; }
-            .vault-header h1 { font-size: 2rem; }
-        }
+        @media (max-width: 800px) { .navbar { padding: 15px 20px; } .grid { grid-template-columns: 1fr; } .vault-header h1 { font-size: 2rem; } }
     </style>
 </head>
 <body>
@@ -131,7 +104,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, doc, getDoc, updateDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -147,7 +120,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // හෝම් පේජ් එකෙන් එවන කැටගරි එක මෙතනින් අල්ලගන්නවා
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('cat') || 'SCR'; 
         let attemptCount = 0;
@@ -156,87 +128,65 @@
         document.getElementById('main-title').innerHTML = `${category} <span>VAULT</span>`;
 
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = 'access.html';
-            } else {
-                checkSecurity(user);
-                listenToAlerts();
-                loadVaultItems();
-            }
+            if (!user) { window.location.href = 'access.html'; } 
+            else { checkSecurity(user); listenToAlerts(); loadVaultItems(); }
         });
 
-        // 1. ANNOUNCEMENT SYSTEM (ලයිව් ඇලර්ට්)
         function listenToAlerts() {
             onSnapshot(doc(db, "settings", "global_alert"), (d) => {
                 const bar = document.getElementById('alert-bar');
-                if (d.exists() && d.data().active) {
-                    bar.innerText = `⚠️ SYSTEM ALERT: ${d.data().message}`;
-                    bar.style.display = "block";
-                } else {
-                    bar.style.display = "none";
-                }
+                if (d.exists() && d.data().active) { bar.innerText = `⚠️ SYSTEM ALERT: ${d.data().message}`; bar.style.display = "block"; } 
+                else { bar.style.display = "none"; }
             });
         }
 
-        // 2. SECURITY CHECK (BAN පරීක්ෂාව)
         async function checkSecurity(user) {
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
-                const data = userSnap.data();
-                if (userData && data.accountStatus === 'banned') {
-                    alert("CRITICAL SECURITY ALERT: ACCESS PERMANENTLY REVOKED.");
+                if (userSnap.data().accountStatus === 'banned') {
+                    alert("CRITICAL SECURITY ALERT: ACCESS REVOKED.");
                     signOut(auth).then(() => window.location.href = 'access.html');
                 }
             }
         }
 
-        // 3. SEARCH LOGIC (ක්ෂණික සෙවීම්)
         window.searchVault = () => {
             const term = document.getElementById('vault-search').value.toLowerCase();
-            const cards = document.querySelectorAll('.item-card');
-            cards.forEach(card => {
+            document.querySelectorAll('.item-card').forEach(card => {
                 const title = card.querySelector('h3').innerText.toLowerCase();
                 card.style.display = title.includes(term) ? "flex" : "none";
             });
         };
 
-        // 4. LOAD ITEMS (කැටගරි එකට අදාළ බඩු විතරක් ලෝඩ් කිරීම)
         function loadVaultItems() {
             const q = query(collection(db, "services"), where("category", "==", category));
             onSnapshot(q, (snapshot) => {
                 const grid = document.getElementById('vault-grid');
-                const loader = document.getElementById('loader');
-                if (loader) loader.style.display = 'none';
-                
+                if (document.getElementById('loader')) document.getElementById('loader').style.display = 'none';
                 grid.innerHTML = "";
-                
-                if(snapshot.empty) {
-                    grid.innerHTML = `<p style="text-align:center; width:100%; color:#555; padding:40px;">No encrypted assets found in the ${category} category.</p>`;
-                    return;
-                }
+                if(snapshot.empty) { grid.innerHTML = `<p style="text-align:center; width:100%; color:#555; padding:40px;">No encrypted assets found.</p>`; return; }
 
                 snapshot.forEach(doc => {
                     const item = doc.data();
-                    grid.innerHTML += `
-                        <div class="item-card">
-                            <div class="img-box"><img src="itam-poto.png" alt="GrimShadow Asset"></div>
-                            <div class="details">
-                                <span class="author-box">DEVELOPER: ${item.author || 'GRIMSHADOW'}</span>
-                                <h3>${item.name}</h3>
-                                <p>${item.description}</p>
-                                <details>
-                                    <summary>INSTALLATION MANUAL</summary>
-                                    <p>${item.installManual || 'No instructions provided.'}</p>
-                                </details>
-                                <button class="download-btn" onclick="secureDownload('${item.fileId}', '${category}')">DOWNLOAD SECURELY</button>
-                            </div>
+                    const card = document.createElement('div');
+                    card.className = 'item-card';
+                    card.innerHTML = `
+                        <div class="img-box"><img src="itam-poto.png"></div>
+                        <div class="details">
+                            <span class="author-box">DEVELOPER: ${item.author || 'GRIMSHADOW'}</span>
+                            <h3>${item.name}</h3>
+                            <p>${item.description}</p>
+                            <details><summary>INSTALLATION MANUAL</summary><p>${item.installManual || 'No instructions.'}</p></details>
+                            <button class="download-btn">REQUEST ACCESS</button>
                         </div>`;
+                    
+                    card.querySelector('button').onclick = () => secureDownload(item.fileId, category, item.name);
+                    grid.appendChild(card);
                 });
             });
         }
 
-        // 5. SECURE DOWNLOAD & AUTO-BAN (ආරක්ෂිත බාගත කිරීම්)
-        window.secureDownload = async (fileId, cat) => {
+        window.secureDownload = async (fileId, cat, itemName) => {
             const inputKey = prompt(`🛡️ [SECURITY PROTOCOL] ENTER ${cat} MASTER KEY:`);
             if (!inputKey) return;
 
@@ -247,22 +197,25 @@
 
             if (inputKey === masterKey) {
                 attemptCount = 0;
-                alert("✅ ACCESS GRANTED: DECRYPTING & FETCHING DATA...");
+                alert("✅ ACCESS GRANTED: Dispatching asset to your Secure Terminal...");
                 
-                const secureUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                const dlFrame = document.createElement('iframe');
-                dlFrame.style.display = 'none';
-                dlFrame.src = secureUrl;
-                document.body.appendChild(dlFrame);
-                setTimeout(() => document.body.removeChild(dlFrame), 6000);
+                // Dashboard එකට දත්ත යැවීම
+                await addDoc(collection(db, "user_downloads"), {
+                    uid: auth.currentUser.uid,
+                    name: itemName,
+                    fileId: fileId,
+                    timestamp: serverTimestamp()
+                });
+
+                window.location.href = 'user-dash.html';
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     await updateDoc(userRef, { accountStatus: 'banned' });
-                    alert("❌ SECURITY BREACH: UNAUTHORIZED ATTEMPTS DETECTED. TERMINAL PERMANENTLY LOCKED.");
+                    alert("❌ SECURITY BREACH: TERMINAL LOCKED.");
                     signOut(auth).then(() => window.location.reload());
                 } else {
-                    alert(`❌ ACCESS DENIED: INVALID KEY. ATTEMPT ${attemptCount}/3 BEFORE LOCKOUT.`);
+                    alert(`❌ ACCESS DENIED: ATTEMPT ${attemptCount}/3.`);
                 }
             }
         };
