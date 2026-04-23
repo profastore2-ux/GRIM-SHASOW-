@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIMSHADOW | Cyber Security & Ethical Hacking</title>
+    <title>GRIMSHADOW | Advanced System Optimization</title>
     <style>
         :root {
             --orange: #FF9F00; 
@@ -26,7 +26,12 @@
             backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000;
             border-bottom: 1px solid rgba(255, 159, 0, 0.2); box-sizing: border-box;
         }
-        .nav-logo img { height: 45px; }
+        .nav-logo-container { display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .glow-logo { height: 45px; filter: drop-shadow(0 0 8px var(--orange)); transition: 0.3s; }
+        .nav-logo-container:hover .glow-logo { transform: scale(1.1) rotate(-5deg); filter: drop-shadow(0 0 15px var(--orange)); }
+        .brand-text { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
+        .brand-text span { color: var(--orange); text-shadow: 0 0 10px rgba(255, 159, 0, 0.5); }
+
         .nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; }
         .nav-links a { text-decoration: none; color: #fff; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
         .nav-links a:hover { color: var(--orange); }
@@ -36,7 +41,7 @@
         .hero h1 { font-size: 4rem; letter-spacing: 5px; margin: 0; text-transform: uppercase; font-weight: 900; }
         .hero h1 span { color: var(--orange); text-shadow: 0 0 20px var(--orange); }
 
-        /* GUIDE */
+        /* STEP GUIDE (PHASE 01-04) */
         .guide-bar {
             background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(10px);
             display: flex; justify-content: center; gap: 40px; padding: 60px 40px; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
@@ -44,6 +49,7 @@
         .guide-item { text-align: center; max-width: 250px; }
         .guide-item .step { font-size: 0.7rem; color: var(--orange); font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; display: block; }
         .guide-item h3 { color: #fff; margin: 10px 0; font-size: 1rem; text-transform: uppercase; }
+        .guide-item p { font-size: 0.85rem; color: #888; line-height: 1.4; }
 
         /* SERVICES GRID */
         .services { padding: 80px 40px; max-width: 1300px; margin: 0 auto; text-align: center; }
@@ -55,50 +61,58 @@
             overflow: hidden; position: relative; text-align: left;
         }
         .card:hover { border-color: var(--orange); transform: translateY(-10px); box-shadow: 0 0 30px rgba(255, 159, 0, 0.2); }
-
         .card-img-container { width: 100%; height: 200px; background: #000; position: relative; overflow: hidden; }
         .card-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.3s; }
-        .card:hover .card-img-container img { opacity: 1; transform: scale(1.05); }
-
-        .category-badge {
-            position: absolute; top: 15px; left: 15px; background: var(--orange); color: #000;
-            padding: 5px 12px; font-size: 0.7rem; font-weight: 900; border-radius: 4px; text-transform: uppercase;
-        }
-
         .card-body { padding: 25px; }
         .card-body h3 { color: #fff; margin: 0 0 10px 0; font-size: 1.2rem; text-transform: uppercase; }
-        .card-body p { color: #ccc; font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px; }
-
+        .category-badge { position: absolute; top: 15px; left: 15px; background: var(--orange); color: #000; padding: 5px 12px; font-size: 0.7rem; font-weight: 900; border-radius: 4px; text-transform: uppercase; }
         .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #222; padding-top: 15px; }
-        .author { font-size: 0.7rem; color: var(--orange); font-weight: bold; }
-
-        .buy-btn {
-            background: #fff; color: #000; border: none; padding: 8px 18px; font-weight: 900;
-            border-radius: 4px; text-transform: uppercase; font-size: 0.75rem; cursor: pointer; transition: 0.3s;
-        }
+        .buy-btn { background: #fff; color: #000; border: none; padding: 8px 18px; font-weight: 900; border-radius: 4px; text-transform: uppercase; font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
         .card:hover .buy-btn { background: var(--orange); }
 
-        /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: #111; padding: 40px; border-radius: 10px; border: 1px solid var(--orange); width: 90%; max-width: 500px; }
+        /* PROTOCOL CENTER (TABS) */
+        .protocol-section { padding: 100px 20px; background: rgba(5, 5, 5, 0.5); }
+        .section-title { text-align: center; font-size: 2rem; letter-spacing: 5px; margin-bottom: 50px; text-transform: uppercase; }
+        .section-title span { color: var(--orange); text-shadow: 0 0 15px var(--orange); }
+        .protocol-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
+        .tab-btn { background: #111; border: 1px solid #222; color: #888; padding: 15px 30px; cursor: pointer; transition: 0.3s; font-weight: 900; letter-spacing: 1px; font-size: 0.8rem; }
+        .tab-btn.active { border-color: var(--orange); color: var(--orange); background: rgba(255, 159, 0, 0.05); }
+        .tab-content { display: none; max-width: 900px; margin: 0 auto; background: rgba(15, 15, 15, 0.8); border: 1px solid #222; padding: 40px; border-radius: 15px; backdrop-filter: blur(10px); animation: fadeIn 0.5s ease; }
+        .tab-content.active { display: block; }
+        .text-side h3 { color: var(--orange); margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
+        .text-side p { line-height: 1.8; color: #ccc; margin-bottom: 20px; font-size: 0.9rem; }
+        .text-side ul { list-style: none; padding: 0; }
+        .text-side ul li { margin-bottom: 15px; border-left: 3px solid var(--orange); padding-left: 15px; font-size: 0.85rem; color: #aaa; }
 
-        @media (max-width: 1000px) {
+        /* CONTACT MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #0a0a0a; padding: 40px; border-radius: 15px; border: 1px solid var(--orange); box-shadow: 0 0 50px rgba(255, 159, 0, 0.2); width: 90%; max-width: 450px; position: relative; }
+        .modal-content h2 { border-left: 4px solid var(--orange); padding-left: 15px; margin-bottom: 25px; letter-spacing: 2px; text-transform: uppercase; font-size: 1.2rem; }
+        input, textarea { width: 100%; padding: 15px; margin-bottom: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 8px; box-sizing: border-box; outline: none; }
+        input:focus, textarea:focus { border-color: var(--orange); }
+        .orange-btn { background: var(--orange); color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
+
+        @media (max-width: 900px) {
             .navbar { padding: 15px 20px; }
             .grid { grid-template-columns: 1fr; }
             .hero h1 { font-size: 2.5rem; }
+            .protocol-tabs { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
-        <div class="nav-logo"><img src="image_13.png" alt="GrimShadow"></div>
+        <div class="nav-logo-container" onclick="location.href='index.html'">
+            <img src="image_13.png" alt="Logo" class="glow-logo">
+            <div class="brand-text">GRIM<span>SHADOW</span></div>
+        </div>
         <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#services">Vaults</a></li>
-            <li><a href="#" onclick="openModal()">Contact</a></li>
+            <li><a href="#home">Home Base</a></li>
+            <li><a href="#services">The Vault</a></li>
+            <li><a href="#protocols">Protocols</a></li>
         </ul>
-        <button style="background:var(--orange); border:none; padding:10px 25px; font-weight:900; cursor:pointer; border-radius: 5px; text-transform: uppercase;" onclick="location.href='access.html'">Access Portal</button>
+        <button style="background:var(--orange); border:none; padding:10px 25px; font-weight:900; cursor:pointer; border-radius: 5px; text-transform: uppercase; color: #000;" onclick="location.href='access.html'">Access Portal</button>
     </nav>
 
     <header class="hero" id="home">
@@ -108,74 +122,59 @@
     </header>
 
     <div class="guide-bar">
-        <div class="guide-item"><span class="step">STEP 01</span><h3>REGISTRATION</h3><p>Register with your email to create your profile.</p></div>
-        <div class="guide-item"><span class="step">STEP 02</span><h3>REQUEST ACCESS</h3><p>Browse and submit an access request via dashboard.</p></div>
-        <div class="guide-item"><span class="step">STEP 03</span><h3>GET THE KEY</h3><p>Unique key delivered via dashboard and email.</p></div>
-        <div class="guide-item"><span class="step">STEP 04</span><h3>FREE DOWNLOAD</h3><p>Unlock files and start using tools immediately.</p></div>
+        <div class="guide-item"><span class="step">PHASE 01</span><h3>IDENTIFICATION</h3><p>Register using a secure email to establish your operative profile.</p></div>
+        <div class="guide-item"><span class="step">PHASE 02</span><h3>KEY ACQUISITION</h3><p>Submit clearance requests to receive your master category keys.</p></div>
+        <div class="guide-item"><span class="step">PHASE 03</span><h3>ASSET DISPATCH</h3><p>Unlock assets in the vault and dispatch them to your secure terminal.</p></div>
+        <div class="guide-item"><span class="step">PHASE 04</span><h3>SECURE FETCH</h3><p>Download from your dashboard. Assets will self-destruct after fetch.</p></div>
     </div>
 
     <section class="services" id="services">
         <h2>SECURE REPOSITORIES</h2>
         <div class="grid">
             <div class="card" onclick="location.href='vault.html?cat=SCR'">
-                <div class="card-img-container">
-                    <span class="category-badge">CAT 01</span>
-                    <img src="itam-poto.png" alt="SCR">
-                </div>
-                <div class="card-body">
-                    <h3>SCRIPTS & MODS (SCR)</h3>
-                    <p>Advanced kernel scripts, performance mods, and optimization tools.</p>
-                    <div class="card-footer">
-                        <span class="author">ACCESS: MASTER KEY REQ.</span>
-                        <button class="buy-btn">OPEN VAULT</button>
-                    </div>
-                </div>
+                <div class="card-img-container"><span class="category-badge">CAT 01</span><img src="itam-poto.png"></div>
+                <div class="card-body"><h3>SCRIPTS & MODS (SCR)</h3><p>Advanced kernel scripts, performance mods, and optimization tools.</p>
+                <div class="card-footer"><span class="author">ACCESS: MASTER KEY REQ.</span><button class="buy-btn">OPEN VAULT</button></div></div>
             </div>
-
             <div class="card" onclick="location.href='vault.html?cat=MEM'">
-                <div class="card-img-container">
-                    <span class="category-badge">CAT 02</span>
-                    <img src="itam-poto.png" alt="MEM">
-                </div>
-                <div class="card-body">
-                    <h3>MEMORY HUB (MEM)</h3>
-                    <p>Dedicated memory management and secure buffer overflow protections.</p>
-                    <div class="card-footer">
-                        <span class="author">ACCESS: MASTER KEY REQ.</span>
-                        <button class="buy-btn">OPEN VAULT</button>
-                    </div>
-                </div>
+                <div class="card-img-container"><span class="category-badge">CAT 02</span><img src="itam-poto.png"></div>
+                <div class="card-body"><h3>MEMORY HUB (MEM)</h3><p>Dedicated memory management and secure buffer overflow protections.</p>
+                <div class="card-footer"><span class="author">ACCESS: MASTER KEY REQ.</span><button class="buy-btn">OPEN VAULT</button></div></div>
             </div>
-
             <div class="card" onclick="location.href='vault.html?cat=SYS'">
-                <div class="card-img-container">
-                    <span class="category-badge">CAT 03</span>
-                    <img src="itam-poto.png" alt="SYS">
-                </div>
-                <div class="card-body">
-                    <h3>SYSTEM PURGE (SYS)</h3>
-                    <p>Full system bypass tools and deep kernel cleaning utilities.</p>
-                    <div class="card-footer">
-                        <span class="author">ACCESS: MASTER KEY REQ.</span>
-                        <button class="buy-btn">OPEN VAULT</button>
-                    </div>
-                </div>
+                <div class="card-img-container"><span class="category-badge">CAT 03</span><img src="itam-poto.png"></div>
+                <div class="card-body"><h3>SYSTEM PURGE (SYS)</h3><p>Full system bypass tools and deep kernel cleaning utilities.</p>
+                <div class="card-footer"><span class="author">ACCESS: MASTER KEY REQ.</span><button class="buy-btn">OPEN VAULT</button></div></div>
             </div>
+        </div>
+    </section>
+
+    <section class="protocol-section" id="protocols">
+        <div class="container">
+            <h2 class="section-title">SYSTEM <span>PROTOCOLS</span></h2>
+            <div class="protocol-tabs">
+                <button class="tab-btn active" onclick="openProtocol(event, 'privacy')">ENCRYPTION POLICY</button>
+                <button class="tab-btn" onclick="openProtocol(event, 'terms')">ENGAGEMENT RULES</button>
+                <button class="tab-btn" onclick="openProtocol(event, 'about')">THE HISTORY</button>
+            </div>
+            <div id="privacy" class="tab-content active"><div class="text-side"><h3>DATA ENCRYPTION PROTOCOLS</h3><p>Our infrastructure prioritizes absolute user anonymity and data integrity.</p><ul><li>🛡️ <strong>Zero-Persistence:</strong> Download data is purged immediately after use.</li><li>🔐 <strong>End-to-End:</strong> All transmissions between operative and node are AES-256 encrypted.</li></ul></div></div>
+            <div id="terms" class="tab-content"><div class="text-side"><h3>USER CONDUCT DIRECTIVES</h3><p>The stability of the void depends on strict adherence to these rules.</p><ul><li>🚫 <strong>Single Access:</strong> Account or Master Key sharing is strictly prohibited.</li><li>⚡ <strong>Auto-Ban:</strong> Security breaches will result in permanent terminal lockout.</li></ul></div></div>
+            <div id="about" class="tab-content"><div class="text-side"><h3>ESTABLISHING THE VOID</h3><p>GrimShadow is an elite collective dedicated to system optimization and advanced tool aggregation.</p><p>Our mission is to unlock the full potential of your system through exclusive technology.</p></div></div>
         </div>
     </section>
 
     <div id="contactModal" class="modal">
         <div class="modal-content">
+            <span style="position:absolute; top:15px; right:20px; cursor:pointer; color:#555;" onclick="closeModal()">✕</span>
             <h2 style="color:var(--orange)">DIRECT INQUIRY</h2>
-            <input type="text" id="contactName" placeholder="Your Name">
-            <input type="email" id="contactEmail" placeholder="Your Email">
-            <textarea id="contactMessage" rows="5" placeholder="How can we help?"></textarea>
+            <input type="text" id="contactName" placeholder="Identification Name">
+            <input type="email" id="contactEmail" placeholder="Secure Email">
+            <textarea id="contactMessage" rows="5" placeholder="Transmission details..."></textarea>
             <button class="orange-btn" onclick="submitInquiry()">SEND MESSAGE</button>
-            <p style="text-align: center; cursor: pointer; margin-top: 15px;" onclick="closeModal()">Close</p>
         </div>
     </div>
 
-    <footer style="text-align: center; padding: 40px; color: #444; border-top: 1px solid #1a1a1a; font-size: 0.8rem;">
+    <footer style="text-align: center; padding: 40px; color: #444; border-top: 1px solid #1a1a1a; font-size: 0.8rem; background: #000;">
         &copy; 2026 GRIMSHADOW ENTERPRISE | SECURING THE VOID.
     </footer>
 
@@ -198,20 +197,33 @@
         window.openModal = () => document.getElementById('contactModal').style.display = 'flex';
         window.closeModal = () => document.getElementById('contactModal').style.display = 'none';
 
+        window.openProtocol = (evt, protocolName) => {
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+            const tabs = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove("active");
+            document.getElementById(protocolName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
         window.submitInquiry = async () => {
             const name = document.getElementById('contactName').value;
             const email = document.getElementById('contactEmail').value;
             const message = document.getElementById('contactMessage').value;
 
-            if(!name || !email || !message) return alert("Please fill all fields");
+            if(!name || !email || !message) return alert("Validation Error: Please fill all required fields.");
 
             await addDoc(collection(db, "inquiries"), {
                 name, email, message,
-                status: "new",
+                status: "pending",
                 timestamp: serverTimestamp()
             });
 
-            alert("Inquiry Sent! Admin will reply to your email soon.");
+            // Telegram Notification
+            const teleMsg = `📨 *NEW INQUIRY*\nName: ${name}\nEmail: ${email}\nMessage: ${message}`;
+            fetch(`https://api.telegram.org/bot8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ/sendMessage?chat_id=-1003946509160&text=${encodeURIComponent(teleMsg)}&parse_mode=Markdown`);
+
+            alert("Transmission Successful. Admin will contact you soon.");
             closeModal();
         };
     </script>
