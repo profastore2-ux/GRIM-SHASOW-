@@ -205,14 +205,15 @@
 
             setTimeout(async () => {
                 const secureUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                const dlFrame = document.createElement('iframe');
-                dlFrame.style.display = 'none';
-                dlFrame.src = secureUrl;
-                document.body.appendChild(dlFrame);
+                
+                // Use location.assign for more reliable direct download
+                window.location.assign(secureUrl);
 
                 await deleteDoc(doc(db, "user_downloads", docId));
-                alert("🛡️ PROTOCOL: Asset purged from dashboard after successful decryption.");
-                setTimeout(() => document.body.removeChild(dlFrame), 5000);
+                alert("🛡️ PROTOCOL: Asset decrypted. Purging terminal data...");
+                
+                // Small delay to let download start then clear UI
+                setTimeout(() => window.location.reload(), 1500);
             }, 2600);
         };
 
