@@ -57,8 +57,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDHFXjdNyaSn83MDv3NwU9d-cT8tJzmWkY",
@@ -93,36 +93,20 @@
             errorElement.style.display = 'none';
 
             try {
-                // Get Current IP
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
 
                 if(isLogin) {
-                    // --- LOGIN LOGIC ---
-                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                    const user = userCredential.user;
-
-                    // Check if Banned
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
-                    if (userDoc.exists() && userDoc.data().accountStatus === 'banned') {
-                        await signOut(auth);
-                        throw new Error("CRITICAL: Your access has been permanently revoked.");
-                    }
-
-                    // Update Last Login IP
-                    await updateDoc(doc(db, "users", user.uid), { lastIP: ipData.ip });
-                    window.location.href = 'user-dash.html';
-
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // මෙතන Redirect එක onAuthStateChanged හරහා ස්වයංක්‍රීයව සිදුවේ.
                 } else {
-                    // --- REGISTER LOGIC ---
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // Create User Profile in Firestore
                     await setDoc(doc(db, "users", user.uid), {
                         email: user.email,
                         uid: user.uid,
-                        accountStatus: "pending_approval", // මුලින්ම Pending වැටෙන්නේ
+                        accountStatus: "pending_approval",
                         lastIP: ipData.ip,
                         joinedAt: serverTimestamp(),
                         keys: { scr: "LOCKED", mem: "LOCKED", sys: "LOCKED" }
@@ -135,14 +119,50 @@
             }
         };
 
+        // --- SESSION AND ACCESS CONTROL LOGIC ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // සයිට් එකට එනකොටම Ban ද කියලා චෙක් කිරීම
+                console.log("Detecting Uplink...");
+
+                // 1. PURGE CHECK: මකපු යූසර් කෙනෙක්ද කියලා බලනවා
+                const purgedDoc = await getDoc(doc(db, "purged_users", user.uid));
+                if (purgedDoc.exists()) {
+                    alert("TERMINAL ERROR: YOUR ACCOUNT HAS BEEN DECOMMISSIONED. RE-REGISTRATION REQUIRED.");
+                    
+                    // Authentication එකවුන්ට් එක මකා දමනවා
+                    user.delete().then(async () => {
+                        await deleteDoc(doc(db, "purged_users", user.uid));
+                        window.location.reload();
+                    }).catch(() => {
+                        signOut(auth).then(() => { window.location.reload(); });
+                    });
+                    return;
+                }
+
+                // 2. BAN CHECK
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists() && userDoc.data().accountStatus === 'banned') {
+                    alert("ACCESS REVOKED: SECURITY VIOLATION DETECTED.");
                     await signOut(auth);
-                } else {
-                    window.location.href = 'user-dash.html';
+                    window.location.reload();
+                    return;
+                }
+
+                // 3. SMART REDIRECT
+                // Super Admin Check
+                if (user.email === "profastore2@gmail.com") {
+                    window.location.href = 'grim-admin-portal.html';
+                } 
+                // Staff Admin Check
+                else {
+                    const adminCheck = await getDoc(doc(db, "admins", user.email));
+                    if (adminCheck.exists()) {
+                        window.location.href = 'staff-panel.html';
+                    } 
+                    // Regular Operative
+                    else {
+                        window.location.href = 'user-dash.html';
+                    }
                 }
             }
         });
