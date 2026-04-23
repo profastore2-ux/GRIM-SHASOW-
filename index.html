@@ -195,7 +195,8 @@
             if (e.altKey && e.key.toLowerCase() === 'g') {
                 const user = auth.currentUser;
                 if (user) {
-                    window.location.href = 'grim-admin.html';
+                    // ඔයාගේ ඇත්තම ඇඩ්මින් පේජ් නමට මෙතන ගැලපුවා
+                    window.location.href = 'grim-admin-portal.html';
                 } else {
                     alert("SECURE ACCESS DENIED: PLEASE LOGIN TO OPERATIVE PORTAL FIRST.");
                     window.location.href = 'access.html';
@@ -209,7 +210,8 @@
                 const adminDoc = await getDoc(doc(db, "admins", user.email));
                 if (adminDoc.exists()) {
                     const nav = document.querySelector('.nav-links');
-                    nav.innerHTML += `<li><a href="grim-admin.html" style="color:var(--orange)">[CORE]</a></li>`;
+                    // මෙතනත් ලින්ක් එක නිවැරදි කළා
+                    nav.innerHTML += `<li><a href="grim-admin-portal.html" style="color:var(--orange)">[CORE]</a></li>`;
                     console.log("Admin Uplink Verified.");
                 }
             }
