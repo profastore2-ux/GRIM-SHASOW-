@@ -32,10 +32,10 @@
         .stat-card h4 { margin: 0; color: #555; font-size: 11px; text-transform: uppercase; }
         .stat-card p { margin: 10px 0 0 0; font-size: 1.8rem; font-weight: 900; color: var(--orange); }
 
-        /* Tables & Badges */
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 15px; color: var(--orange); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #222; }
         td { padding: 15px; border-bottom: 1px solid #111; font-size: 12px; color: #bbb; }
+        
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
         .badge-pending { background: rgba(255, 159, 0, 0.1); color: var(--orange); border: 1px solid var(--orange); }
         .badge-active { background: rgba(0, 255, 102, 0.1); color: var(--green); border: 1px solid var(--green); }
@@ -90,6 +90,10 @@
                 <div class="stat-card"><h4>TOTAL OPS</h4><p id="st-users">0</p></div>
                 <div class="stat-card"><h4>OPEN TICKETS</h4><p id="st-inq">0</p></div>
             </div>
+            <div class="card">
+                <h3><i class="fas fa-microchip" style="color:var(--orange)"></i> RECENT OPERATIONS</h3>
+                <div id="quick-logs" style="font-family:monospace; font-size:11px; color:#666"></div>
+            </div>
         </div>
 
         <div id="global-orders" class="section">
@@ -107,7 +111,7 @@
             <div class="header-box"><h1>OPERATIVE DATABASE</h1></div>
             <div class="card">
                 <table>
-                    <thead><tr><th>Operative</th><th>Assets Owned</th><th>Master Keys</th><th>Status</th><th>Control Center</th></tr></thead>
+                    <thead><tr><th>Operative</th><th>Deployed Assets</th><th>Encryption Keys</th><th>Status</th><th>Control Center</th></tr></thead>
                     <tbody id="full-user-list"></tbody>
                 </table>
             </div>
@@ -150,7 +154,7 @@
 
         <div id="logs" class="section"><div class="header-box"><h1>EVENT LOGS</h1></div><div class="card" id="log-terminal" style="background:#000; height:450px; overflow-y:auto; font-family:monospace; color:var(--green); padding:20px;"></div></div>
         <div id="requests" class="section"><div class="header-box"><h1>CLEARANCE REQUESTS</h1></div><div class="card"><table><thead><tr><th>User Email</th><th>Status</th><th>Verification</th></tr></thead><tbody id="req-list"></tbody></table></div></div>
-        <div id="announcements" class="section"><div class="header-box"><h1>BROADCAST</h1></div><div class="card"><textarea id="alertMsg" rows="4"></textarea><button class="btn btn-blue" onclick="postAlert()">PUSH ALERT</button></div></div>
+        <div id="announcements" class="section"><div class="header-box"><h1>GLOBAL BROADCAST</h1></div><div class="card"><textarea id="alertMsg" rows="4"></textarea><button class="btn btn-blue" onclick="postAlert()">PUSH ALERT</button></div></div>
         <div id="maintenance" class="section"><div class="header-box"><h1>LOCKDOWN</h1></div><div class="card" style="text-align:center; padding:50px;"><button class="btn btn-red" onclick="toggleLockdown()">INITIALIZE MAINTENANCE</button></div></div>
     </div>
 
@@ -193,13 +197,17 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            event.currentTarget.classList.add('active');
+            const activeNav = [...document.querySelectorAll('.nav-item')].find(item => item.getAttribute('onclick').includes(id));
+            if(activeNav) activeNav.classList.add('active');
         };
 
         function addLog(msg, type = 'info') {
             const term = document.getElementById('log-terminal');
+            const qLog = document.getElementById('quick-logs');
             const color = type === 'err' ? 'var(--red)' : (type === 'warn' ? 'var(--orange)' : 'var(--green)');
-            term.innerHTML += `<div style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            const entry = `<div style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            term.innerHTML += entry;
+            qLog.innerHTML = entry + qLog.innerHTML;
             term.scrollTop = term.scrollHeight;
         }
 
@@ -212,7 +220,7 @@
             });
             onSnapshot(query(collection(db, "users"), where("accountStatus", "==", "pending_approval")), s => document.getElementById('st-reqs').innerText = s.size);
 
-            // 1. Global Orders Stream
+            // 1. GLOBAL ORDERS STREAM
             onSnapshot(query(collection(db, "user_downloads"), orderBy("timestamp", "desc")), (snap) => {
                 const list = document.getElementById('global-orders-list'); list.innerHTML = "";
                 snap.forEach(d => {
@@ -221,7 +229,7 @@
                 });
             });
 
-            // 2. Operative DB (ALL BUTTONS RESTORED)
+            // 2. OPERATIVE DATABASE (ALL BUTTONS ACTIVE)
             onSnapshot(collection(db, "users"), (snap) => {
                 const list = document.getElementById('full-user-list'); list.innerHTML = "";
                 snap.forEach(async (uDoc) => {
@@ -240,18 +248,18 @@
                             <td><span class="badge badge-${u.accountStatus}">${u.accountStatus}</span></td>
                             <td>
                                 <div style="display:flex; gap:5px;">
-                                    <button class="btn btn-blue" onclick="replyInquiry('${u.email}', 'Operative', 'Support Link')"><i class="fas fa-envelope"></i></button>
-                                    <button class="btn btn-orange" onclick="resetKeys('${uid}', '${u.email}')"><i class="fas fa-key"></i></button>
-                                    <button class="btn btn-blue" onclick="changePass('${u.email}')"><i class="fas fa-unlock"></i></button>
-                                    <button class="btn ${u.accountStatus === 'banned' ? 'btn-orange' : 'btn-red'}" onclick="updateStatus('${uid}', '${u.accountStatus === 'banned' ? 'active' : 'banned'}')"><i class="fas fa-user-slash"></i></button>
-                                    <button class="btn btn-red" onclick="deleteDocById('users', '${uid}')"><i class="fas fa-trash"></i></button>
+                                    <button class="btn btn-blue" title="Email" onclick="replyInquiry('${u.email}', 'Operative', 'Support Link')"><i class="fas fa-envelope"></i></button>
+                                    <button class="btn btn-orange" title="Reset Keys" onclick="resetKeys('${uid}', '${u.email}')"><i class="fas fa-key"></i></button>
+                                    <button class="btn btn-blue" title="Reset Pass" onclick="changePass('${u.email}')"><i class="fas fa-unlock"></i></button>
+                                    <button class="btn ${u.accountStatus === 'banned' ? 'btn-orange' : 'btn-red'}" title="Ban/Unban" onclick="updateStatus('${uid}', '${u.accountStatus === 'banned' ? 'active' : 'banned'}')"><i class="fas fa-user-slash"></i></button>
+                                    <button class="btn btn-red" title="Delete" onclick="deleteDocById('users', '${uid}')"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>`;
                 });
             });
 
-            // Inquiries, Items, etc.
+            // 3. INQUIRIES STREAM
             onSnapshot(query(collection(db, "inquiries"), orderBy("timestamp", "desc")), (snap) => {
                 const list = document.getElementById('inq-list'); list.innerHTML = "";
                 snap.forEach(d => {
@@ -259,16 +267,52 @@
                     list.innerHTML += `<tr><td>${data.timestamp?.toDate().toLocaleTimeString() || '---'}</td><td>${data.name}</td><td>${data.message}</td><td><button class="btn btn-blue" onclick="replyInquiry('${data.email}','${data.name}','${data.message}')">REPLY</button></td></tr>`;
                 });
             });
+
+            // 4. VERIFICATIONS STREAM
+            onSnapshot(query(collection(db, "users"), where("accountStatus", "==", "pending_approval")), (snap) => {
+                const list = document.getElementById('req-list'); list.innerHTML = "";
+                snap.forEach(d => {
+                    list.innerHTML += `<tr><td>${d.data().email}</td><td><span class="badge badge-pending">PENDING</span></td><td><button class="btn btn-orange" onclick="approveUser('${d.id}', '${d.data().email}')">VERIFY & DISPATCH</button></td></tr>`;
+                });
+            });
+
+            // 5. ITEM REPOSITORY LIST
+            onSnapshot(collection(db, "services"), (snap) => {
+                const list = document.getElementById('items-list'); list.innerHTML = "";
+                snap.forEach(d => {
+                    list.innerHTML += `<tr><td><strong>${d.data().name}</strong></td><td><span class="badge badge-item">${d.data().category}</span></td><td><button class="btn btn-red" onclick="deleteDocById('services', '${d.id}')">DELETE</button></td></tr>`;
+                });
+            });
         }
 
         // ACTIONS
         window.replyInquiry = (email, name, originalMsg) => {
-            const subjectLine = prompt("Subject:");
-            const replyContent = prompt(`Reply for ${name}:`);
-            if(replyContent) emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, { to_email: email, to_name: name, subject: subjectLine, message: originalMsg, admin_reply: replyContent }).then(() => alert("Dispatched!"));
+            const subjectLine = prompt("Enter Email Subject:");
+            const replyContent = prompt(`Response for ${name}:`);
+            if(replyContent && subjectLine) {
+                emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, { 
+                    to_email: email, to_name: name, subject: subjectLine, message: originalMsg, admin_reply: replyContent 
+                }).then(() => { alert("Transmission Successful!"); addLog(`Email sent to ${email}`); });
+            }
+        };
+
+        window.addItem = async () => {
+            const n = document.getElementById('itemName').value;
+            const l = document.getElementById('itemLink').value;
+            const extractId = (url) => { const m = url.match(/(?:\/d\/|id=)([\w-]+)/); return m ? m[1] : url; };
+            if(!n || !l) return alert("Missing Info");
+            await addDoc(collection(db, "services"), {
+                name: n, author: document.getElementById('itemAuthor').value,
+                category: document.getElementById('itemCategory').value,
+                installManual: document.getElementById('itemManual').value,
+                fileId: extractId(l), timestamp: serverTimestamp()
+            });
+            addLog(`New Asset Deployed: ${n}`);
+            alert("Live on Vault!");
         };
 
         window.approveUser = async (uid, email) => {
+            if(!confirm("Authorize Operative?")) return;
             const genKey = (p) => `GS-${p}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             const keys = { scr: genKey('SCR'), mem: genKey('MEM'), sys: genKey('SYS') };
             await updateDoc(doc(db, "users", uid), { accountStatus: "active", keys: keys });
@@ -277,18 +321,31 @@
         };
 
         window.resetKeys = async (uid, email) => {
-            if(!confirm("Reset Keys?")) return;
+            if(!confirm("Generate and Dispatch New Keys?")) return;
             const genKey = (p) => `GS-${p}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
             const keys = { scr: genKey('SCR'), mem: genKey('MEM'), sys: genKey('SYS') };
             await updateDoc(doc(db, "users", uid), { keys: keys });
             await emailjs.send(GRIM_CONFIG.serviceID, "template_3jthuy8", { to_email: email, ...keys });
-            alert("New Keys Dispatched!");
+            addLog(`Keys Reset for: ${email}`, 'warn');
+            alert("Keys Dispatched.");
         };
 
-        window.updateStatus = async (uid, status) => { await updateDoc(doc(db, "users", uid), { accountStatus: status }); addLog(`Status Change: ${uid} to ${status}`, 'warn'); };
-        window.changePass = (email) => { if(confirm("Send Reset Link?")) sendPasswordResetEmail(auth, email).then(() => alert("Sent!")); };
-        window.deleteDocById = async (coll, id) => { if(confirm("Permanently Purge?")) await deleteDoc(doc(db, coll, id)); };
-        window.addItem = async () => { /* ... (same as before) ... */ };
+        window.updateStatus = async (uid, status) => { 
+            await updateDoc(doc(db, "users", uid), { accountStatus: status }); 
+            addLog(`Status Update: ${uid} -> ${status}`, 'warn'); 
+        };
+
+        window.changePass = (email) => { 
+            if(confirm("Send Secure Reset Link?")) sendPasswordResetEmail(auth, email).then(() => alert("Dispatched.")); 
+        };
+
+        window.toggleLockdown = async () => {
+            const s = confirm("INITIATE GLOBAL LOCKDOWN?");
+            await setDoc(doc(db, "settings", "maintenance"), { active: s });
+            addLog(`MAINTENANCE MODE: ${s ? 'ENABLED' : 'DISABLED'}`, 'err');
+        };
+
+        window.deleteDocById = async (coll, id) => { if(confirm("PERMANENTLY PURGE DATA?")) await deleteDoc(doc(db, coll, id)); };
         window.logout = () => signOut(auth).then(() => location.href = 'index.html');
         setInterval(() => { document.getElementById('live-time').innerText = new Date().toLocaleString(); }, 1000);
     </script>
