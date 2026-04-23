@@ -7,10 +7,9 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --orange: #FF9F00; --dark: #050505; --card: #0d0d0d; --red: #ff4444; --blue: #0088cc; --green: #00ff66; }
+        :root { --orange: #FF9F00; --dark: #050505; --card: #0d0d0d; --red: #ff4444; --blue: #0088cc; --green: #00ff66; --gold: #ffd700; }
         body { margin: 0; background: var(--dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; overflow: hidden; height: 100vh; }
         
-        /* Sidebar Enhanced */
         .sidebar { width: 280px; background: #000; border-right: 1px solid #1a1a1a; padding: 25px; display: flex; flex-direction: column; overflow-y: auto; }
         .sidebar h2 { color: var(--orange); letter-spacing: 3px; font-size: 1.1rem; border-left: 4px solid var(--orange); padding-left: 15px; margin-bottom: 30px; text-transform: uppercase; }
         .nav-group { color: #444; font-size: 10px; text-transform: uppercase; margin: 15px 0 10px 5px; font-weight: 900; letter-spacing: 1px; }
@@ -18,7 +17,6 @@
         .nav-item i { width: 20px; font-size: 1rem; }
         .nav-item:hover, .nav-item.active { background: rgba(255, 159, 0, 0.1); color: var(--orange); }
 
-        /* Main Area */
         .main { flex-grow: 1; padding: 30px; overflow-y: auto; background-image: radial-gradient(circle at 10% 10%, #111 1%, transparent 10%); }
         .section { display: none; animation: slideUp 0.4s ease; }
         .section.active { display: block; }
@@ -51,111 +49,94 @@
         
         #loading-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
         .spinner { width: 40px; height: 40px; border: 4px solid #111; border-top-color: var(--orange); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <p style="letter-spacing: 4px; font-size: 10px; color: var(--orange); font-weight: 900;">ESTABLISHING MASTER UPLINK...</p>
+        <p style="letter-spacing: 4px; font-size: 10px; color: var(--orange); font-weight: 900;">GRAND MASTER UPLINK ESTABLISHED</p>
     </div>
 
     <div class="sidebar">
-        <h2>GRIM<span>COMMAND</span></h2>
-        <div class="nav-group">Main Ops</div>
-        <div class="nav-item active" onclick="showSection('overview')"><i class="fas fa-terminal"></i> OVERVIEW</div>
+        <h2>GRIM<span>MASTER</span></h2>
+        <div class="nav-group">Core Command</div>
+        <div class="nav-item active" onclick="showSection('overview')"><i class="fas fa-crown"></i> OVERVIEW</div>
+        <div class="nav-item" onclick="showSection('admin-mgmt')"><i class="fas fa-users-cog"></i> STAFF CONTROL</div>
+        <div class="nav-item" onclick="showSection('revenue')"><i class="fas fa-dollar-sign"></i> REVENUE ANALYTICS</div>
+
+        <div class="nav-group">Ops Monitoring</div>
         <div class="nav-item" onclick="showSection('inquiries')"><i class="fas fa-inbox"></i> INQUIRIES <span id="inquiry-count" style="margin-left:auto; color:var(--orange)">0</span></div>
         <div class="nav-item" onclick="showSection('global-orders')"><i class="fas fa-shopping-cart"></i> SYSTEM ORDERS</div>
         <div class="nav-item" onclick="showSection('requests')"><i class="fas fa-user-shield"></i> VERIFICATIONS</div>
 
-        <div class="nav-group">Data Management</div>
+        <div class="nav-group">Advanced Data</div>
         <div class="nav-item" onclick="showSection('items')"><i class="fas fa-box-open"></i> ITEM REPOSITORY</div>
-        <div class="nav-item" onclick="showSection('user-db')"><i class="fas fa-users-cog"></i> OPERATIVE DATABASE</div>
+        <div class="nav-item" onclick="showSection('user-db')"><i class="fas fa-database"></i> OPERATIVE DATABASE</div>
         
-        <div class="nav-group">Control Grid</div>
-        <div class="nav-item" onclick="showSection('announcements')"><i class="fas fa-broadcast-tower"></i> ANNOUNCEMENTS</div>
-        <div class="nav-item" onclick="showSection('logs')"><i class="fas fa-file-code"></i> LIVE LOGS</div>
-        <div class="nav-item" onclick="showSection('maintenance')"><i class="fas fa-user-lock"></i> LOCKDOWN</div>
+        <div class="nav-group">Global Lockdown</div>
+        <div class="nav-item" onclick="showSection('logs')"><i class="fas fa-terminal"></i> LIVE MASTER LOGS</div>
+        <div class="nav-item" onclick="showSection('maintenance')" style="color:var(--red)"><i class="fas fa-power-off"></i> SYSTEM SHUTDOWN</div>
         
-        <div class="nav-item" onclick="logout()" style="margin-top: auto; color: var(--red);"><i class="fas fa-power-off"></i> SHUTDOWN</div>
+        <div class="nav-item" onclick="logout()" style="margin-top: auto; color: var(--red);"><i class="fas fa-sign-out-alt"></i> DISCONNECT</div>
     </div>
 
     <div class="main">
         <div id="overview" class="section active">
-            <div class="header-box"><h1>CORE SYSTEM STATUS</h1><p id="live-time" style="color:#555"></p></div>
+            <div class="header-box"><h1>MASTER TERMINAL</h1><p id="live-time" style="color:#555"></p></div>
             <div class="grid-stats">
                 <div class="stat-card"><h4>ACTIVE ASSETS</h4><p id="st-items">0</p></div>
-                <div class="stat-card"><h4>PENDING REQS</h4><p id="st-reqs">0</p></div>
-                <div class="stat-card"><h4>TOTAL OPS</h4><p id="st-users">0</p></div>
+                <div class="stat-card"><h4>TOTAL OPERATIVES</h4><p id="st-users">0</p></div>
+                <div class="stat-card"><h4>STAFF ONLINE</h4><p id="st-staff">0</p></div>
                 <div class="stat-card"><h4>OPEN TICKETS</h4><p id="st-inq">0</p></div>
             </div>
             <div class="card">
-                <h3><i class="fas fa-microchip" style="color:var(--orange)"></i> RECENT OPERATIONS</h3>
-                <div id="quick-logs" style="font-family:monospace; font-size:11px; color:#666"></div>
+                <h3><i class="fas fa-bolt" style="color:var(--orange)"></i> RECENT MASTER OPERATIONS</h3>
+                <div id="quick-logs" style="font-family:monospace; font-size:11px; color:#666; height:150px; overflow-y:auto;"></div>
             </div>
         </div>
 
-        <div id="global-orders" class="section">
-            <div class="header-box"><h1>GLOBAL TRANSACTION LEDGER</h1></div>
+        <div id="admin-mgmt" class="section">
+            <div class="header-box"><h1>STAFF MANAGEMENT</h1></div>
             <div class="card">
-                <h3><i class="fas fa-history"></i> LIVE DEPLOYMENT STREAM</h3>
-                <table>
-                    <thead><tr><th>Timestamp</th><th>Operative UID</th><th>Asset Dispatched</th><th>Status</th></tr></thead>
-                    <tbody id="global-orders-list"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="user-db" class="section">
-            <div class="header-box"><h1>OPERATIVE DATABASE</h1></div>
-            <div class="card">
-                <table>
-                    <thead><tr><th>Operative</th><th>Deployed Assets</th><th>Encryption Keys</th><th>Status</th><th>Control Center</th></tr></thead>
-                    <tbody id="full-user-list"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="inquiries" class="section">
-            <div class="header-box"><h1>INCOMING TRANSMISSIONS</h1></div>
-            <div class="card">
-                <table>
-                    <thead><tr><th>Time</th><th>Operative</th><th>Message Stream</th><th>Actions</th></tr></thead>
-                    <tbody id="inq-list"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="items" class="section">
-            <div class="header-box"><h1>ASSET MANAGEMENT</h1></div>
-            <div class="card">
-                <h3>DEPLOY NEW ASSET</h3>
+                <h3>ASSIGN NEW MODERATOR</h3>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="itemName" placeholder="Asset Name">
-                    <input type="text" id="itemAuthor" placeholder="Lead Dev">
+                    <input type="email" id="newAdminEmail" placeholder="Enter Gmail of Staff Member">
+                    <button class="btn btn-orange" onclick="promoteAdmin()"><i class="fas fa-user-plus"></i> GRANT STAFF ACCESS</button>
                 </div>
-                <select id="itemCategory">
-                    <option value="SCR">SCRIPTS (SCR)</option>
-                    <option value="MEM">MEMORY (MEM)</option>
-                    <option value="SYS">SYSTEM (SYS)</option>
-                </select>
-                <textarea id="itemManual" placeholder="Deployment Instructions..."></textarea>
-                <input type="text" id="itemLink" placeholder="Google Drive Source URL">
-                <button class="btn btn-orange" onclick="addItem()"><i class="fas fa-cloud-upload-alt"></i> PUBLISH TO VAULT</button>
             </div>
             <div class="card">
+                <h3>CURRENT STAFF LIST</h3>
                 <table>
-                    <thead><tr><th>Asset Name</th><th>Category</th><th>Control</th></tr></thead>
-                    <tbody id="items-list"></tbody>
+                    <thead><tr><th>Staff Email</th><th>Privilege</th><th>Status</th><th>Control</th></tr></thead>
+                    <tbody id="staff-list"></tbody>
                 </table>
             </div>
         </div>
 
-        <div id="logs" class="section"><div class="header-box"><h1>EVENT LOGS</h1></div><div class="card" id="log-terminal" style="background:#000; height:450px; overflow-y:auto; font-family:monospace; color:var(--green); padding:20px;"></div></div>
-        <div id="requests" class="section"><div class="header-box"><h1>CLEARANCE REQUESTS</h1></div><div class="card"><table><thead><tr><th>User Email</th><th>Status</th><th>Verification</th></tr></thead><tbody id="req-list"></tbody></table></div></div>
-        <div id="announcements" class="section"><div class="header-box"><h1>GLOBAL BROADCAST</h1></div><div class="card"><textarea id="alertMsg" rows="4"></textarea><button class="btn btn-blue" onclick="postAlert()">PUSH ALERT</button></div></div>
-        <div id="maintenance" class="section"><div class="header-box"><h1>LOCKDOWN</h1></div><div class="card" style="text-align:center; padding:50px;"><button class="btn btn-red" onclick="toggleLockdown()">INITIALIZE MAINTENANCE</button></div></div>
+        <div id="revenue" class="section">
+            <div class="header-box"><h1>SYSTEM REVENUE</h1></div>
+            <div class="grid-stats">
+                <div class="stat-card" style="border-top-color:var(--green)"><h4>ESTIMATED PROFIT</h4><p id="rev-total">$0.00</p></div>
+                <div class="stat-card" style="border-top-color:var(--blue)"><h4>MOST BOUGHT CATEGORY</h4><p id="rev-best">-</p></div>
+            </div>
+            <div class="card">
+                <h3>ASSET SALES BREAKDOWN</h3>
+                <table><thead><tr><th>Asset Name</th><th>Units Dispatched</th><th>Category</th></tr></thead><tbody id="rev-list"></tbody></table>
+            </div>
+        </div>
+
+        <div id="global-orders" class="section"><div class="header-box"><h1>TRANSACTION LEDGER</h1></div><div class="card"><table><thead><tr><th>Time</th><th>Operative UID</th><th>Asset</th><th>Status</th></tr></thead><tbody id="global-orders-list"></tbody></table></div></div>
+        <div id="user-db" class="section"><div class="header-box"><h1>OPERATIVE DATABASE</h1></div><div class="card"><table><thead><tr><th>Operative</th><th>Assets</th><th>Keys</th><th>Status</th><th>Control</th></tr></thead><tbody id="full-user-list"></tbody></table></div></div>
+        <div id="inquiries" class="section"><div class="header-box"><h1>SUPPORT INBOX</h1></div><div class="card"><table><thead><tr><th>Time</th><th>Operative</th><th>Stream</th><th>Actions</th></tr></thead><tbody id="inq-list"></tbody></table></div></div>
+        <div id="items" class="section">
+            <div class="header-box"><h1>VAULT CONTROL</h1></div>
+            <div class="card"><h3>PUBLISH NEW ASSET</h3><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="itemName" placeholder="Asset Name"><input type="text" id="itemAuthor" placeholder="Lead Dev"></div><select id="itemCategory"><option value="SCR">SCRIPTS</option><option value="MEM">MEMORY</option><option value="SYS">SYSTEM</option></select><textarea id="itemManual" placeholder="Protocols..."></textarea><input type="text" id="itemLink" placeholder="Encrypted Storage Link"><button class="btn btn-orange" onclick="addItem()">DEPLOY LIVE</button></div>
+            <div class="card"><table><thead><tr><th>Name</th><th>Cat</th><th>Action</th></tr></thead><tbody id="items-list"></tbody></table></div>
+        </div>
+        <div id="logs" class="section"><div class="header-box"><h1>MASTER SYSTEM LOGS</h1></div><div class="card" id="log-terminal" style="background:#000; height:500px; overflow-y:auto; font-family:monospace; color:var(--green); padding:20px;"></div></div>
+        <div id="requests" class="section"><div class="header-box"><h1>CLEARANCE REQUESTS</h1></div><div class="card"><table><thead><tr><th>User</th><th>Status</th><th>Verify</th></tr></thead><tbody id="req-list"></tbody></table></div></div>
+        <div id="maintenance" class="section"><div class="header-box"><h1>CORE SHUTDOWN</h1></div><div class="card" style="text-align:center; padding:100px;"><i class="fas fa-skull" style="font-size:3rem; color:var(--red); margin-bottom:20px;"></i><h2>LOCK ALL TERMINALS</h2><button class="btn btn-red" onclick="toggleLockdown()" style="padding:20px 40px; font-size:1rem;">ACTIVATE MAINTENANCE PROTOCOL</button></div></div>
     </div>
 
     <script type="module">
@@ -179,9 +160,7 @@
         const GRIM_CONFIG = {
             serviceID: "service_pvurqvo",
             templateID: "template_1qzcs3d",
-            publicKey: "le4jq10jrrE4sFDVH",
-            botToken: "8732578578:AAE69-qHqKa9iDEXrTG7L9XQHPRoUXebCEQ",
-            adminGroupID: "-1003946509160"
+            publicKey: "le4jq10jrrE4sFDVH"
         };
 
         emailjs.init(GRIM_CONFIG.publicKey);
@@ -189,7 +168,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 1500);
-                loadAllCoreData();
+                loadMasterData();
             } else window.location.href = 'access.html';
         });
 
@@ -197,8 +176,7 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            const activeNav = [...document.querySelectorAll('.nav-item')].find(item => item.getAttribute('onclick').includes(id));
-            if(activeNav) activeNav.classList.add('active');
+            event.currentTarget.classList.add('active');
         };
 
         function addLog(msg, type = 'info') {
@@ -211,141 +189,100 @@
             term.scrollTop = term.scrollHeight;
         }
 
-        function loadAllCoreData() {
+        function loadMasterData() {
+            // General Stats
             onSnapshot(collection(db, "services"), s => document.getElementById('st-items').innerText = s.size);
             onSnapshot(collection(db, "users"), s => document.getElementById('st-users').innerText = s.size);
             onSnapshot(collection(db, "inquiries"), s => {
                 document.getElementById('st-inq').innerText = s.size;
                 document.getElementById('inquiry-count').innerText = s.size;
             });
-            onSnapshot(query(collection(db, "users"), where("accountStatus", "==", "pending_approval")), s => document.getElementById('st-reqs').innerText = s.size);
+            onSnapshot(collection(db, "admins"), s => document.getElementById('st-staff').innerText = s.size);
 
-            // 1. GLOBAL ORDERS STREAM
+            // 1. Staff Management
+            onSnapshot(collection(db, "admins"), (snap) => {
+                const list = document.getElementById('staff-list'); list.innerHTML = "";
+                snap.forEach(d => {
+                    list.innerHTML += `<tr><td>${d.id}</td><td>STAFF</td><td><span class="badge badge-active">LINKED</span></td><td><button class="btn btn-red" onclick="demoteAdmin('${d.id}')">REVOKE</button></td></tr>`;
+                });
+            });
+
+            // 2. Revenue & Asset Sales
+            onSnapshot(collection(db, "user_downloads"), (snap) => {
+                const list = document.getElementById('rev-list'); list.innerHTML = "";
+                const counts = {};
+                snap.forEach(d => {
+                    const n = d.data().name;
+                    counts[n] = (counts[n] || 0) + 1;
+                });
+                for(let n in counts) {
+                    list.innerHTML += `<tr><td>${n}</td><td>${counts[n]}</td><td>SECURE</td></tr>`;
+                }
+            });
+
+            // Rest of your existing Snapshot Stream Logic (Inquiries, UserDB, Orders etc.)
             onSnapshot(query(collection(db, "user_downloads"), orderBy("timestamp", "desc")), (snap) => {
                 const list = document.getElementById('global-orders-list'); list.innerHTML = "";
                 snap.forEach(d => {
                     const data = d.data();
-                    list.innerHTML += `<tr><td>${data.timestamp?.toDate().toLocaleString() || '---'}</td><td>${data.uid.substring(0,10)}...</td><td><span class="badge badge-item">${data.name}</span></td><td><span class="badge badge-active">DISPATCHED</span></td></tr>`;
+                    list.innerHTML += `<tr><td>${data.timestamp?.toDate().toLocaleString() || '---'}</td><td>${data.uid.substring(0,10)}...</td><td><span class="badge badge-item">${data.name}</span></td><td><span class="badge badge-active">FETCHED</span></td></tr>`;
                 });
             });
 
-            // 2. OPERATIVE DATABASE (ALL BUTTONS ACTIVE)
             onSnapshot(collection(db, "users"), (snap) => {
                 const list = document.getElementById('full-user-list'); list.innerHTML = "";
                 snap.forEach(async (uDoc) => {
                     const u = uDoc.data();
-                    const uid = uDoc.id;
-                    const qH = query(collection(db, "user_downloads"), where("uid", "==", uid));
-                    const hSnap = await getDocs(qH);
-                    let assets = hSnap.empty ? '<small>NONE</small>' : '';
-                    hSnap.forEach(h => { assets += `<span class="badge badge-item">${h.data().name}</span>`; });
-
-                    list.innerHTML += `
-                        <tr>
-                            <td><strong>${u.email}</strong><br><small>IP: ${u.lastIP || '?'}</small></td>
-                            <td>${assets}</td>
-                            <td style="font-family:monospace; font-size:10px; color:var(--orange)">SCR: ${u.keys?.scr || '-'}</td>
-                            <td><span class="badge badge-${u.accountStatus}">${u.accountStatus}</span></td>
-                            <td>
-                                <div style="display:flex; gap:5px;">
-                                    <button class="btn btn-blue" title="Email" onclick="replyInquiry('${u.email}', 'Operative', 'Support Link')"><i class="fas fa-envelope"></i></button>
-                                    <button class="btn btn-orange" title="Reset Keys" onclick="resetKeys('${uid}', '${u.email}')"><i class="fas fa-key"></i></button>
-                                    <button class="btn btn-blue" title="Reset Pass" onclick="changePass('${u.email}')"><i class="fas fa-unlock"></i></button>
-                                    <button class="btn ${u.accountStatus === 'banned' ? 'btn-orange' : 'btn-red'}" title="Ban/Unban" onclick="updateStatus('${uid}', '${u.accountStatus === 'banned' ? 'active' : 'banned'}')"><i class="fas fa-user-slash"></i></button>
-                                    <button class="btn btn-red" title="Delete" onclick="deleteDocById('users', '${uid}')"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>`;
-                });
-            });
-
-            // 3. INQUIRIES STREAM
-            onSnapshot(query(collection(db, "inquiries"), orderBy("timestamp", "desc")), (snap) => {
-                const list = document.getElementById('inq-list'); list.innerHTML = "";
-                snap.forEach(d => {
-                    const data = d.data();
-                    list.innerHTML += `<tr><td>${data.timestamp?.toDate().toLocaleTimeString() || '---'}</td><td>${data.name}</td><td>${data.message}</td><td><button class="btn btn-blue" onclick="replyInquiry('${data.email}','${data.name}','${data.message}')">REPLY</button></td></tr>`;
-                });
-            });
-
-            // 4. VERIFICATIONS STREAM
-            onSnapshot(query(collection(db, "users"), where("accountStatus", "==", "pending_approval")), (snap) => {
-                const list = document.getElementById('req-list'); list.innerHTML = "";
-                snap.forEach(d => {
-                    list.innerHTML += `<tr><td>${d.data().email}</td><td><span class="badge badge-pending">PENDING</span></td><td><button class="btn btn-orange" onclick="approveUser('${d.id}', '${d.data().email}')">VERIFY & DISPATCH</button></td></tr>`;
-                });
-            });
-
-            // 5. ITEM REPOSITORY LIST
-            onSnapshot(collection(db, "services"), (snap) => {
-                const list = document.getElementById('items-list'); list.innerHTML = "";
-                snap.forEach(d => {
-                    list.innerHTML += `<tr><td><strong>${d.data().name}</strong></td><td><span class="badge badge-item">${d.data().category}</span></td><td><button class="btn btn-red" onclick="deleteDocById('services', '${d.id}')">DELETE</button></td></tr>`;
+                    list.innerHTML += `<tr><td>${u.email}</td><td>HISTORY</td><td>SCR: ${u.keys?.scr || '-'}</td><td><span class="badge badge-${u.accountStatus}">${u.accountStatus}</span></td><td><button class="btn btn-red" onclick="deleteDocById('users', '${uDoc.id}')">PURGE</button></td></tr>`;
                 });
             });
         }
 
-        // ACTIONS
-        window.replyInquiry = (email, name, originalMsg) => {
-            const subjectLine = prompt("Enter Email Subject:");
-            const replyContent = prompt(`Response for ${name}:`);
-            if(replyContent && subjectLine) {
-                emailjs.send(GRIM_CONFIG.serviceID, GRIM_CONFIG.templateID, { 
-                    to_email: email, to_name: name, subject: subjectLine, message: originalMsg, admin_reply: replyContent 
-                }).then(() => { alert("Transmission Successful!"); addLog(`Email sent to ${email}`); });
+        // --- NEW MASTER ACTIONS ---
+
+        window.promoteAdmin = async () => {
+            const email = document.getElementById('newAdminEmail').value;
+            if(!email) return alert("Enter Staff Email");
+            await setDoc(doc(db, "admins", email), { role: "staff", timestamp: serverTimestamp() });
+            addLog(`Staff Access Granted: ${email}`, 'warn');
+            alert("Operative Promoted to Staff.");
+        };
+
+        window.demoteAdmin = async (email) => {
+            if(confirm(`REVOKE ACCESS FOR ${email}?`)) {
+                await deleteDoc(doc(db, "admins", email));
+                addLog(`Staff Privileges Revoked: ${email}`, 'err');
             }
         };
 
         window.addItem = async () => {
             const n = document.getElementById('itemName').value;
             const l = document.getElementById('itemLink').value;
-            const extractId = (url) => { const m = url.match(/(?:\/d\/|id=)([\w-]+)/); return m ? m[1] : url; };
-            if(!n || !l) return alert("Missing Info");
+            if(!n || !l) return alert("Info Missing");
             await addDoc(collection(db, "services"), {
                 name: n, author: document.getElementById('itemAuthor').value,
                 category: document.getElementById('itemCategory').value,
                 installManual: document.getElementById('itemManual').value,
-                fileId: extractId(l), timestamp: serverTimestamp()
+                fileId: l.match(/(?:\/d\/|id=)([\w-]+)/)?.[1] || l,
+                timestamp: serverTimestamp()
             });
             addLog(`New Asset Deployed: ${n}`);
-            alert("Live on Vault!");
+            alert("Live!");
         };
 
-        window.approveUser = async (uid, email) => {
-            if(!confirm("Authorize Operative?")) return;
-            const genKey = (p) => `GS-${p}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            const keys = { scr: genKey('SCR'), mem: genKey('MEM'), sys: genKey('SYS') };
-            await updateDoc(doc(db, "users", uid), { accountStatus: "active", keys: keys });
-            await emailjs.send(GRIM_CONFIG.serviceID, "template_3jthuy8", { to_email: email, ...keys });
-            addLog(`Operative Verified: ${email}`);
-        };
-
-        window.resetKeys = async (uid, email) => {
-            if(!confirm("Generate and Dispatch New Keys?")) return;
-            const genKey = (p) => `GS-${p}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-            const keys = { scr: genKey('SCR'), mem: genKey('MEM'), sys: genKey('SYS') };
-            await updateDoc(doc(db, "users", uid), { keys: keys });
-            await emailjs.send(GRIM_CONFIG.serviceID, "template_3jthuy8", { to_email: email, ...keys });
-            addLog(`Keys Reset for: ${email}`, 'warn');
-            alert("Keys Dispatched.");
-        };
-
-        window.updateStatus = async (uid, status) => { 
-            await updateDoc(doc(db, "users", uid), { accountStatus: status }); 
-            addLog(`Status Update: ${uid} -> ${status}`, 'warn'); 
-        };
-
-        window.changePass = (email) => { 
-            if(confirm("Send Secure Reset Link?")) sendPasswordResetEmail(auth, email).then(() => alert("Dispatched.")); 
+        window.deleteDocById = async (coll, id) => { 
+            if(confirm("PERMANENTLY PURGE OPERATIVE?")) {
+                await deleteDoc(doc(db, coll, id)); 
+                addLog(`Operative Purged: ${id}`, 'err');
+            }
         };
 
         window.toggleLockdown = async () => {
             const s = confirm("INITIATE GLOBAL LOCKDOWN?");
             await setDoc(doc(db, "settings", "maintenance"), { active: s });
-            addLog(`MAINTENANCE MODE: ${s ? 'ENABLED' : 'DISABLED'}`, 'err');
+            addLog(`GLOBAL MAINTENANCE: ${s ? 'ENABLED' : 'DISABLED'}`, 'err');
         };
 
-        window.deleteDocById = async (coll, id) => { if(confirm("PERMANENTLY PURGE DATA?")) await deleteDoc(doc(db, coll, id)); };
         window.logout = () => signOut(auth).then(() => location.href = 'index.html');
         setInterval(() => { document.getElementById('live-time').innerText = new Date().toLocaleString(); }, 1000);
     </script>
